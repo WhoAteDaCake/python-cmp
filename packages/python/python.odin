@@ -52,7 +52,7 @@ _PyTime_t :: i64;
 Py_UCS4 :: u32;
 Py_UCS2 :: u16;
 Py_UCS1 :: u8;
-Py_UNICODE :: wchar_t;
+Py_UNICODE :: _c.wchar_t;
 PyLongObject :: _longobject;
 digit :: u32;
 sdigit :: i32;
@@ -457,7 +457,7 @@ PyASCIIObject :: struct {
     length : _c.ssize_t,
     hash : _c.ssize_t,
     state : AnonymousStruct21,
-    wstr : ^wchar_t,
+    wstr : ^_c.wchar_t,
 };
 
 PyCompactUnicodeObject :: struct {
@@ -703,7 +703,7 @@ PyStatus :: struct {
 
 PyWideStringList :: struct {
     length : _c.ssize_t,
-    items : ^^wchar_t,
+    items : ^^_c.wchar_t,
 };
 
 PyPreConfig :: struct {
@@ -734,12 +734,12 @@ PyConfig :: struct {
     show_alloc_count : _c.int,
     dump_refs : _c.int,
     malloc_stats : _c.int,
-    filesystem_encoding : ^wchar_t,
-    filesystem_errors : ^wchar_t,
-    pycache_prefix : ^wchar_t,
+    filesystem_encoding : ^_c.wchar_t,
+    filesystem_errors : ^_c.wchar_t,
+    pycache_prefix : ^_c.wchar_t,
     parse_argv : _c.int,
     argv : PyWideStringList,
-    program_name : ^wchar_t,
+    program_name : ^_c.wchar_t,
     xoptions : PyWideStringList,
     warnoptions : PyWideStringList,
     site_import : _c.int,
@@ -754,24 +754,24 @@ PyConfig :: struct {
     user_site_directory : _c.int,
     configure_c_stdio : _c.int,
     buffered_stdio : _c.int,
-    stdio_encoding : ^wchar_t,
-    stdio_errors : ^wchar_t,
-    check_hash_pycs_mode : ^wchar_t,
+    stdio_encoding : ^_c.wchar_t,
+    stdio_errors : ^_c.wchar_t,
+    check_hash_pycs_mode : ^_c.wchar_t,
     pathconfig_warnings : _c.int,
-    pythonpath_env : ^wchar_t,
-    home : ^wchar_t,
+    pythonpath_env : ^_c.wchar_t,
+    home : ^_c.wchar_t,
     module_search_paths_set : _c.int,
     module_search_paths : PyWideStringList,
-    executable : ^wchar_t,
-    base_executable : ^wchar_t,
-    prefix : ^wchar_t,
-    base_prefix : ^wchar_t,
-    exec_prefix : ^wchar_t,
-    base_exec_prefix : ^wchar_t,
+    executable : ^_c.wchar_t,
+    base_executable : ^_c.wchar_t,
+    prefix : ^_c.wchar_t,
+    base_prefix : ^_c.wchar_t,
+    exec_prefix : ^_c.wchar_t,
+    base_exec_prefix : ^_c.wchar_t,
     skip_source_first_line : _c.int,
-    run_command : ^wchar_t,
-    run_module : ^wchar_t,
-    run_filename : ^wchar_t,
+    run_command : ^_c.wchar_t,
+    run_module : ^_c.wchar_t,
+    run_filename : ^_c.wchar_t,
     install_importlib : _c.int,
     init_main : _c.int,
 };
@@ -1120,7 +1120,7 @@ foreign python {
     _PyMem_Strdup :: proc(str : cstring) -> cstring ---;
 
     @(link_name="_PyMem_RawWcsdup")
-    _PyMem_RawWcsdup :: proc(str : ^wchar_t) -> ^wchar_t ---;
+    _PyMem_RawWcsdup :: proc(str : ^_c.wchar_t) -> ^_c.wchar_t ---;
 
     @(link_name="PyMem_GetAllocator")
     PyMem_GetAllocator :: proc(domain : PyMemAllocatorDomain, allocator : ^PyMemAllocatorEx) ---;
@@ -1687,13 +1687,13 @@ foreign python {
     PyUnicode_InternFromString :: proc(u : cstring) -> ^PyObject ---;
 
     @(link_name="PyUnicode_FromWideChar")
-    PyUnicode_FromWideChar :: proc(w : ^wchar_t, size : _c.ssize_t) -> ^PyObject ---;
+    PyUnicode_FromWideChar :: proc(w : ^_c.wchar_t, size : _c.ssize_t) -> ^PyObject ---;
 
     @(link_name="PyUnicode_AsWideChar")
-    PyUnicode_AsWideChar :: proc(unicode : ^PyObject, w : ^wchar_t, size : _c.ssize_t) -> _c.ssize_t ---;
+    PyUnicode_AsWideChar :: proc(unicode : ^PyObject, w : ^_c.wchar_t, size : _c.ssize_t) -> _c.ssize_t ---;
 
     @(link_name="PyUnicode_AsWideCharString")
-    PyUnicode_AsWideCharString :: proc(unicode : ^PyObject, size : ^_c.ssize_t) -> ^wchar_t ---;
+    PyUnicode_AsWideCharString :: proc(unicode : ^PyObject, size : ^_c.ssize_t) -> ^_c.wchar_t ---;
 
     @(link_name="PyUnicode_FromOrdinal")
     PyUnicode_FromOrdinal :: proc(ordinal : _c.int) -> ^PyObject ---;
@@ -3082,10 +3082,10 @@ foreign python {
     PyStatus_Exception :: proc(err : PyStatus) -> _c.int ---;
 
     @(link_name="PyWideStringList_Append")
-    PyWideStringList_Append :: proc(list : ^PyWideStringList, item : ^wchar_t) -> PyStatus ---;
+    PyWideStringList_Append :: proc(list : ^PyWideStringList, item : ^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="PyWideStringList_Insert")
-    PyWideStringList_Insert :: proc(list : ^PyWideStringList, index : _c.ssize_t, item : ^wchar_t) -> PyStatus ---;
+    PyWideStringList_Insert :: proc(list : ^PyWideStringList, index : _c.ssize_t, item : ^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="PyPreConfig_InitPythonConfig")
     PyPreConfig_InitPythonConfig :: proc(config : ^PyPreConfig) ---;
@@ -3103,10 +3103,10 @@ foreign python {
     PyConfig_Clear :: proc(unamed0 : ^PyConfig) ---;
 
     @(link_name="PyConfig_SetString")
-    PyConfig_SetString :: proc(config : ^PyConfig, config_str : ^^wchar_t, str : ^wchar_t) -> PyStatus ---;
+    PyConfig_SetString :: proc(config : ^PyConfig, config_str : ^^_c.wchar_t, str : ^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="PyConfig_SetBytesString")
-    PyConfig_SetBytesString :: proc(config : ^PyConfig, config_str : ^^wchar_t, str : cstring) -> PyStatus ---;
+    PyConfig_SetBytesString :: proc(config : ^PyConfig, config_str : ^^_c.wchar_t, str : cstring) -> PyStatus ---;
 
     @(link_name="PyConfig_Read")
     PyConfig_Read :: proc(config : ^PyConfig) -> PyStatus ---;
@@ -3115,10 +3115,10 @@ foreign python {
     PyConfig_SetBytesArgv :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^cstring) -> PyStatus ---;
 
     @(link_name="PyConfig_SetArgv")
-    PyConfig_SetArgv :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^^wchar_t) -> PyStatus ---;
+    PyConfig_SetArgv :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="PyConfig_SetWideStringList")
-    PyConfig_SetWideStringList :: proc(config : ^PyConfig, list : ^PyWideStringList, length : _c.ssize_t, items : ^^wchar_t) -> PyStatus ---;
+    PyConfig_SetWideStringList :: proc(config : ^PyConfig, list : ^PyWideStringList, length : _c.ssize_t, items : ^^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="_PyInterpreterState_RequiresIDRef")
     _PyInterpreterState_RequiresIDRef :: proc(unamed0 : ^PyInterpreterState) -> _c.int ---;
@@ -3964,37 +3964,37 @@ foreign python {
     Py_Exit :: proc(unamed0 : _c.int) ---;
 
     @(link_name="Py_Main")
-    Py_Main :: proc(argc : _c.int, argv : ^^wchar_t) -> _c.int ---;
+    Py_Main :: proc(argc : _c.int, argv : ^^_c.wchar_t) -> _c.int ---;
 
     @(link_name="Py_BytesMain")
     Py_BytesMain :: proc(argc : _c.int, argv : ^cstring) -> _c.int ---;
 
     @(link_name="Py_SetProgramName")
-    Py_SetProgramName :: proc(unamed0 : ^wchar_t) ---;
+    Py_SetProgramName :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="Py_GetProgramName")
-    Py_GetProgramName :: proc() -> ^wchar_t ---;
+    Py_GetProgramName :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_SetPythonHome")
-    Py_SetPythonHome :: proc(unamed0 : ^wchar_t) ---;
+    Py_SetPythonHome :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="Py_GetPythonHome")
-    Py_GetPythonHome :: proc() -> ^wchar_t ---;
+    Py_GetPythonHome :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_GetProgramFullPath")
-    Py_GetProgramFullPath :: proc() -> ^wchar_t ---;
+    Py_GetProgramFullPath :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_GetPrefix")
-    Py_GetPrefix :: proc() -> ^wchar_t ---;
+    Py_GetPrefix :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_GetExecPrefix")
-    Py_GetExecPrefix :: proc() -> ^wchar_t ---;
+    Py_GetExecPrefix :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_GetPath")
-    Py_GetPath :: proc() -> ^wchar_t ---;
+    Py_GetPath :: proc() -> ^_c.wchar_t ---;
 
     @(link_name="Py_SetPath")
-    Py_SetPath :: proc(unamed0 : ^wchar_t) ---;
+    Py_SetPath :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="Py_GetVersion")
     Py_GetVersion :: proc() -> cstring ---;
@@ -4027,7 +4027,7 @@ foreign python {
     Py_PreInitializeFromBytesArgs :: proc(src_config : ^PyPreConfig, argc : _c.ssize_t, argv : ^cstring) -> PyStatus ---;
 
     @(link_name="Py_PreInitializeFromArgs")
-    Py_PreInitializeFromArgs :: proc(src_config : ^PyPreConfig, argc : _c.ssize_t, argv : ^^wchar_t) -> PyStatus ---;
+    Py_PreInitializeFromArgs :: proc(src_config : ^PyPreConfig, argc : _c.ssize_t, argv : ^^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="_Py_IsCoreInitialized")
     _Py_IsCoreInitialized :: proc() -> _c.int ---;
@@ -4039,7 +4039,7 @@ foreign python {
     _Py_InitializeFromArgs :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^cstring) -> PyStatus ---;
 
     @(link_name="_Py_InitializeFromWideArgs")
-    _Py_InitializeFromWideArgs :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^^wchar_t) -> PyStatus ---;
+    _Py_InitializeFromWideArgs :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^^_c.wchar_t) -> PyStatus ---;
 
     @(link_name="_Py_InitializeMain")
     _Py_InitializeMain :: proc() -> PyStatus ---;
@@ -4060,7 +4060,7 @@ foreign python {
     Py_FdIsInteractive :: proc(unamed0 : ^FILE, unamed1 : cstring) -> _c.int ---;
 
     @(link_name="_Py_SetProgramFullPath")
-    _Py_SetProgramFullPath :: proc(unamed0 : ^wchar_t) ---;
+    _Py_SetProgramFullPath :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="_Py_gitidentifier")
     _Py_gitidentifier :: proc() -> cstring ---;
@@ -4213,13 +4213,13 @@ foreign python {
     PySys_SetObject :: proc(unamed0 : cstring, unamed1 : ^PyObject) -> _c.int ---;
 
     @(link_name="PySys_SetArgv")
-    PySys_SetArgv :: proc(unamed0 : _c.int, unamed1 : ^^wchar_t) ---;
+    PySys_SetArgv :: proc(unamed0 : _c.int, unamed1 : ^^_c.wchar_t) ---;
 
     @(link_name="PySys_SetArgvEx")
-    PySys_SetArgvEx :: proc(unamed0 : _c.int, unamed1 : ^^wchar_t, unamed2 : _c.int) ---;
+    PySys_SetArgvEx :: proc(unamed0 : _c.int, unamed1 : ^^_c.wchar_t, unamed2 : _c.int) ---;
 
     @(link_name="PySys_SetPath")
-    PySys_SetPath :: proc(unamed0 : ^wchar_t) ---;
+    PySys_SetPath :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="PySys_WriteStdout")
     PySys_WriteStdout :: proc(format : cstring) ---;
@@ -4237,7 +4237,7 @@ foreign python {
     PySys_ResetWarnOptions :: proc() ---;
 
     @(link_name="PySys_AddWarnOption")
-    PySys_AddWarnOption :: proc(unamed0 : ^wchar_t) ---;
+    PySys_AddWarnOption :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="PySys_AddWarnOptionUnicode")
     PySys_AddWarnOptionUnicode :: proc(unamed0 : ^PyObject) ---;
@@ -4246,7 +4246,7 @@ foreign python {
     PySys_HasWarnOptions :: proc() -> _c.int ---;
 
     @(link_name="PySys_AddXOption")
-    PySys_AddXOption :: proc(unamed0 : ^wchar_t) ---;
+    PySys_AddXOption :: proc(unamed0 : ^_c.wchar_t) ---;
 
     @(link_name="PySys_GetXOptions")
     PySys_GetXOptions :: proc() -> ^PyObject ---;
@@ -4834,22 +4834,22 @@ foreign python {
     _Py_dg_infinity :: proc(sign : _c.int) -> _c.double ---;
 
     @(link_name="Py_DecodeLocale")
-    Py_DecodeLocale :: proc(arg : cstring, size : ^_c.size_t) -> ^wchar_t ---;
+    Py_DecodeLocale :: proc(arg : cstring, size : ^_c.size_t) -> ^_c.wchar_t ---;
 
     @(link_name="Py_EncodeLocale")
-    Py_EncodeLocale :: proc(text : ^wchar_t, error_pos : ^_c.size_t) -> cstring ---;
+    Py_EncodeLocale :: proc(text : ^_c.wchar_t, error_pos : ^_c.size_t) -> cstring ---;
 
     @(link_name="_Py_EncodeLocaleRaw")
-    _Py_EncodeLocaleRaw :: proc(text : ^wchar_t, error_pos : ^_c.size_t) -> cstring ---;
+    _Py_EncodeLocaleRaw :: proc(text : ^_c.wchar_t, error_pos : ^_c.size_t) -> cstring ---;
 
     @(link_name="_Py_GetErrorHandler")
     _Py_GetErrorHandler :: proc(errors : cstring) -> _Py_error_handler ---;
 
     @(link_name="_Py_DecodeLocaleEx")
-    _Py_DecodeLocaleEx :: proc(arg : cstring, wstr : ^^wchar_t, wlen : ^_c.size_t, reason : ^cstring, current_locale : _c.int, errors : _Py_error_handler) -> _c.int ---;
+    _Py_DecodeLocaleEx :: proc(arg : cstring, wstr : ^^_c.wchar_t, wlen : ^_c.size_t, reason : ^cstring, current_locale : _c.int, errors : _Py_error_handler) -> _c.int ---;
 
     @(link_name="_Py_EncodeLocaleEx")
-    _Py_EncodeLocaleEx :: proc(text : ^wchar_t, str : ^cstring, error_pos : ^_c.size_t, reason : ^cstring, current_locale : _c.int, errors : _Py_error_handler) -> _c.int ---;
+    _Py_EncodeLocaleEx :: proc(text : ^_c.wchar_t, str : ^cstring, error_pos : ^_c.size_t, reason : ^cstring, current_locale : _c.int, errors : _Py_error_handler) -> _c.int ---;
 
     @(link_name="_Py_device_encoding")
     _Py_device_encoding :: proc(unamed0 : _c.int) -> ^PyObject ---;
@@ -4870,7 +4870,7 @@ foreign python {
     _Py_open_noraise :: proc(pathname : cstring, flags : _c.int) -> _c.int ---;
 
     @(link_name="_Py_wfopen")
-    _Py_wfopen :: proc(path : ^wchar_t, mode : ^wchar_t) -> ^FILE ---;
+    _Py_wfopen :: proc(path : ^_c.wchar_t, mode : ^_c.wchar_t) -> ^FILE ---;
 
     @(link_name="_Py_fopen")
     _Py_fopen :: proc(pathname : cstring, mode : cstring) -> ^FILE ---;
@@ -4888,13 +4888,13 @@ foreign python {
     _Py_write_noraise :: proc(fd : _c.int, buf : rawptr, count : _c.size_t) -> _c.ssize_t ---;
 
     @(link_name="_Py_wreadlink")
-    _Py_wreadlink :: proc(path : ^wchar_t, buf : ^wchar_t, buflen : _c.size_t) -> _c.int ---;
+    _Py_wreadlink :: proc(path : ^_c.wchar_t, buf : ^_c.wchar_t, buflen : _c.size_t) -> _c.int ---;
 
     @(link_name="_Py_wrealpath")
-    _Py_wrealpath :: proc(path : ^wchar_t, resolved_path : ^wchar_t, resolved_path_len : _c.size_t) -> ^wchar_t ---;
+    _Py_wrealpath :: proc(path : ^_c.wchar_t, resolved_path : ^_c.wchar_t, resolved_path_len : _c.size_t) -> ^_c.wchar_t ---;
 
     @(link_name="_Py_wgetcwd")
-    _Py_wgetcwd :: proc(buf : ^wchar_t, buflen : _c.size_t) -> ^wchar_t ---;
+    _Py_wgetcwd :: proc(buf : ^_c.wchar_t, buflen : _c.size_t) -> ^_c.wchar_t ---;
 
     @(link_name="_Py_get_inheritable")
     _Py_get_inheritable :: proc(fd : _c.int) -> _c.int ---;
