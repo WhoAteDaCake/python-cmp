@@ -1,6 +1,7 @@
 package python
 import _os "core:os"
 import _libc "core:c/libc"
+import "core:sys/unix"
 
 foreign import "system:python"
 
@@ -95,6 +96,16 @@ PyContextToken :: _pycontexttokenobject;
 PyArena :: _arena;
 PyOS_sighandler_t :: #type proc(unamed0 : _c.int);
 Py_AuditHookFunction :: #type proc(unamed0 : cstring, unamed1 : ^PyObject, unamed2 : rawptr) -> _c.int;
+_PyRuntimeState :: pyruntimestate;
+
+memory_order :: enum i32 {
+    memory_order_relaxed = 0,
+    memory_order_consume = 1,
+    memory_order_acquire = 2,
+    memory_order_release = 3,
+    memory_order_acq_rel = 4,
+    memory_order_seq_cst = 5,
+};
 
 _PyTime_round_t :: enum i32 {
     PyTime_ROUND_FLOOR = 0,
@@ -132,7 +143,7 @@ PyGILState_STATE :: enum i32 {
     PyGILState_UNLOCKED,
 };
 
-AnonymousEnum4 :: enum i32 {
+AnonymousEnum5 :: enum i32 {
     PyStatus_TYPE_OK = 0,
     PyStatus_TYPE_ERROR = 1,
     PyStatus_TYPE_EXIT = 2,
@@ -160,6 +171,14 @@ _PyConfigInitEnum :: enum i32 {
     PyConfig_INIT_COMPAT = 1,
     PyConfig_INIT_PYTHON = 2,
     PyConfig_INIT_ISOLATED = 3,
+};
+
+_Py_memory_order :: enum i32 {
+    Py_memory_order_relaxed = 0,
+    Py_memory_order_acquire = 2,
+    Py_memory_order_release = 3,
+    Py_memory_order_acq_rel = 4,
+    Py_memory_order_seq_cst = 5,
 };
 
 _typeobject :: struct {
@@ -718,7 +737,7 @@ PyCellObject :: struct {
 _is :: struct {};
 
 PyStatus :: struct {
-    type : AnonymousEnum4,
+    type : AnonymousEnum5,
     func : cstring,
     err_msg : cstring,
     exitcode : _c.int,
@@ -1063,7 +1082,26 @@ _frozen :: struct {
     size : _c.int,
 };
 
-pyruntimestate :: struct {};
+pyruntimestate :: struct {
+    preinitializing : _c.int,
+    preinitialized : _c.int,
+    core_initialized : _c.int,
+    initialized : _c.int,
+    finalizing : _Py_atomic_address,
+    interpreters : pyinterpreters,
+    xidregistry : _xidregistry,
+    main_thread : _c.ulong,
+    
+            exitfuncs: [32](proc(rptr: rawptr) -> rawptr),
+            nexitfuncs : _c.int,
+        
+    ceval : _ceval_runtime_state,
+    gilstate : _gilstate_runtime_state,
+    preconfig : PyPreConfig,
+    open_code_hook : Py_OpenCodeHookFunction,
+    open_code_userdata : rawptr,
+    audit_hook_head : ^_Py_AuditHookEntry,
+};
 
 _PyArgv :: struct {
     argc : _c.ssize_t,
@@ -1078,6 +1116,57 @@ _PyPreCmdline :: struct {
     isolated : _c.int,
     use_environment : _c.int,
     dev_mode : _c.int,
+};
+
+_Py_atomic_address :: struct {
+    value : _libc.atomic_uintptr_t,
+};
+
+_Py_atomic_int :: struct {
+    value : _libc.atomic_int,
+};
+
+_gil_runtime_state :: struct {
+    interval : _c.ulong,
+    last_holder : _Py_atomic_address,
+    locked : _Py_atomic_int,
+    switch_number : _c.ulong,
+    cond : unix.pthread_cond_t,
+    mutex : unix.pthread_mutex_t,
+    switch_cond : unix.pthread_cond_t,
+    switch_mutex : unix.pthread_mutex_t,
+};
+
+_ceval_runtime_state :: struct {
+    signals_pending : _Py_atomic_int,
+    gil : _gil_runtime_state,
+};
+
+_gilstate_runtime_state :: struct {
+    check_enabled : _c.int,
+    tstate_current : _Py_atomic_address,
+    autoInterpreterState : ^PyInterpreterState,
+    autoTSSkey : Py_tss_t,
+};
+
+_Py_AuditHookEntry :: struct {
+    next : ^_Py_AuditHookEntry,
+    hookCFunction : Py_AuditHookFunction,
+    userData : rawptr,
+};
+
+pyinterpreters :: struct {
+    mutex : PyThread_type_lock,
+    head : ^PyInterpreterState,
+    main : ^PyInterpreterState,
+    next_id : i64,
+};
+
+_xidregitem :: struct {};
+
+_xidregistry :: struct {
+    mutex : PyThread_type_lock,
+    head : ^_xidregitem,
 };
 
 _Py_HashSecret_t :: struct #raw_union {
@@ -5078,5 +5167,122 @@ foreign python {
 
     @(link_name="_Py_GetConfigsAsDict")
     _Py_GetConfigsAsDict :: proc() -> ^PyObject ---;
+
+    @(link_name="AnnotateRWLockCreate")
+    AnnotateRWLockCreate :: proc(file : cstring, line : _c.int, lock : rawptr) ---;
+
+    @(link_name="AnnotateRWLockDestroy")
+    AnnotateRWLockDestroy :: proc(file : cstring, line : _c.int, lock : rawptr) ---;
+
+    @(link_name="AnnotateRWLockAcquired")
+    AnnotateRWLockAcquired :: proc(file : cstring, line : _c.int, lock : rawptr, is_w : _c.long) ---;
+
+    @(link_name="AnnotateRWLockReleased")
+    AnnotateRWLockReleased :: proc(file : cstring, line : _c.int, lock : rawptr, is_w : _c.long) ---;
+
+    @(link_name="AnnotateBarrierInit")
+    AnnotateBarrierInit :: proc(file : cstring, line : _c.int, barrier : rawptr, count : _c.long, reinitialization_allowed : _c.long) ---;
+
+    @(link_name="AnnotateBarrierWaitBefore")
+    AnnotateBarrierWaitBefore :: proc(file : cstring, line : _c.int, barrier : rawptr) ---;
+
+    @(link_name="AnnotateBarrierWaitAfter")
+    AnnotateBarrierWaitAfter :: proc(file : cstring, line : _c.int, barrier : rawptr) ---;
+
+    @(link_name="AnnotateBarrierDestroy")
+    AnnotateBarrierDestroy :: proc(file : cstring, line : _c.int, barrier : rawptr) ---;
+
+    @(link_name="AnnotateCondVarWait")
+    AnnotateCondVarWait :: proc(file : cstring, line : _c.int, cv : rawptr, lock : rawptr) ---;
+
+    @(link_name="AnnotateCondVarSignal")
+    AnnotateCondVarSignal :: proc(file : cstring, line : _c.int, cv : rawptr) ---;
+
+    @(link_name="AnnotateCondVarSignalAll")
+    AnnotateCondVarSignalAll :: proc(file : cstring, line : _c.int, cv : rawptr) ---;
+
+    @(link_name="AnnotatePublishMemoryRange")
+    AnnotatePublishMemoryRange :: proc(file : cstring, line : _c.int, address : rawptr, size : _c.long) ---;
+
+    @(link_name="AnnotateUnpublishMemoryRange")
+    AnnotateUnpublishMemoryRange :: proc(file : cstring, line : _c.int, address : rawptr, size : _c.long) ---;
+
+    @(link_name="AnnotatePCQCreate")
+    AnnotatePCQCreate :: proc(file : cstring, line : _c.int, pcq : rawptr) ---;
+
+    @(link_name="AnnotatePCQDestroy")
+    AnnotatePCQDestroy :: proc(file : cstring, line : _c.int, pcq : rawptr) ---;
+
+    @(link_name="AnnotatePCQPut")
+    AnnotatePCQPut :: proc(file : cstring, line : _c.int, pcq : rawptr) ---;
+
+    @(link_name="AnnotatePCQGet")
+    AnnotatePCQGet :: proc(file : cstring, line : _c.int, pcq : rawptr) ---;
+
+    @(link_name="AnnotateNewMemory")
+    AnnotateNewMemory :: proc(file : cstring, line : _c.int, address : rawptr, size : _c.long) ---;
+
+    @(link_name="AnnotateExpectRace")
+    AnnotateExpectRace :: proc(file : cstring, line : _c.int, address : rawptr, description : cstring) ---;
+
+    @(link_name="AnnotateBenignRace")
+    AnnotateBenignRace :: proc(file : cstring, line : _c.int, address : rawptr, description : cstring) ---;
+
+    @(link_name="AnnotateBenignRaceSized")
+    AnnotateBenignRaceSized :: proc(file : cstring, line : _c.int, address : rawptr, size : _c.long, description : cstring) ---;
+
+    @(link_name="AnnotateMutexIsUsedAsCondVar")
+    AnnotateMutexIsUsedAsCondVar :: proc(file : cstring, line : _c.int, mu : rawptr) ---;
+
+    @(link_name="AnnotateTraceMemory")
+    AnnotateTraceMemory :: proc(file : cstring, line : _c.int, arg : rawptr) ---;
+
+    @(link_name="AnnotateThreadName")
+    AnnotateThreadName :: proc(file : cstring, line : _c.int, name : cstring) ---;
+
+    @(link_name="AnnotateIgnoreReadsBegin")
+    AnnotateIgnoreReadsBegin :: proc(file : cstring, line : _c.int) ---;
+
+    @(link_name="AnnotateIgnoreReadsEnd")
+    AnnotateIgnoreReadsEnd :: proc(file : cstring, line : _c.int) ---;
+
+    @(link_name="AnnotateIgnoreWritesBegin")
+    AnnotateIgnoreWritesBegin :: proc(file : cstring, line : _c.int) ---;
+
+    @(link_name="AnnotateIgnoreWritesEnd")
+    AnnotateIgnoreWritesEnd :: proc(file : cstring, line : _c.int) ---;
+
+    @(link_name="AnnotateEnableRaceDetection")
+    AnnotateEnableRaceDetection :: proc(file : cstring, line : _c.int, enable : _c.int) ---;
+
+    @(link_name="AnnotateNoOp")
+    AnnotateNoOp :: proc(file : cstring, line : _c.int, arg : rawptr) ---;
+
+    @(link_name="AnnotateFlushState")
+    AnnotateFlushState :: proc(file : cstring, line : _c.int) ---;
+
+    @(link_name="RunningOnValgrind")
+    RunningOnValgrind :: proc() -> _c.int ---;
+
+    @(link_name="_PyRuntimeState_Init")
+    _PyRuntimeState_Init :: proc(runtime : ^_PyRuntimeState) -> PyStatus ---;
+
+    @(link_name="_PyRuntimeState_Fini")
+    _PyRuntimeState_Fini :: proc(runtime : ^_PyRuntimeState) ---;
+
+    @(link_name="_PyRuntimeState_ReInitThreads")
+    _PyRuntimeState_ReInitThreads :: proc(runtime : ^_PyRuntimeState) ---;
+
+    @(link_name="_PyRuntime_Initialize")
+    _PyRuntime_Initialize :: proc() -> PyStatus ---;
+
+    @(link_name="_PyRuntime_Finalize")
+    _PyRuntime_Finalize :: proc() ---;
+
+    @(link_name="_PyRuntimeState_GetFinalizing")
+    _PyRuntimeState_GetFinalizing :: proc(runtime : ^_PyRuntimeState) -> ^PyThreadState ---;
+
+    @(link_name="_PyRuntimeState_SetFinalizing")
+    _PyRuntimeState_SetFinalizing :: proc(runtime : ^_PyRuntimeState, tstate : ^PyThreadState) ---;
 
 }
