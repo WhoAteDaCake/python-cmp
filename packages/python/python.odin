@@ -1,9 +1,11 @@
-package python
-import _os "core:os"
-import _libc "core:c/libc"
-import "core:sys/unix"
 
-foreign import "system:python"
+    package python
+
+    foreign import python "system:python3.9"
+    import "core:sys/unix"
+    import _libc "core:c/libc"
+    import _os "core:os"
+    
 
 import _c "core:c"
 
