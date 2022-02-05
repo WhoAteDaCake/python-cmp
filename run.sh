@@ -1,2 +1,6 @@
-#!/usr/bin/env bash
-odin-nightly run src/main.odin -collection:packages=packages
+# !/usr/bin/env bash
+
+odin-nightly build \
+    src/main.odin \
+    -collection:packages=packages \
+    -extra-linker-flags:"$(python3.9-config --ldflags)"

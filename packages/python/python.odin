@@ -1,6 +1,6 @@
 package python
 
-foreign import "system:python"
+foreign import python "system:python3.9"
 
 import _c "core:c"
 import _libc "core:c/libc"
