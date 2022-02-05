@@ -654,7 +654,8 @@ PyCellObject :: struct {
 
 _Py_tss_t :: struct {
     is_initialized : _c.int,
-    key : pthread_key_t,
+    key: u32,
+    // key : pthread_key_t,
 };
 
 _ts :: struct {
@@ -1405,23 +1406,23 @@ foreign python {
     @(link_name="_PyTime_AsNanosecondsObject")
     _PyTime_AsNanosecondsObject :: proc(t : i64) -> ^PyObject ---;
 
-    @(link_name="_PyTime_FromTimeval")
-    _PyTime_FromTimeval :: proc(tp : ^i64, tv : ^timeval) -> _c.int ---;
+    // @(link_name="_PyTime_FromTimeval")
+    // _PyTime_FromTimeval :: proc(tp : ^i64, tv : ^timeval) -> _c.int ---;
 
-    @(link_name="_PyTime_AsTimeval")
-    _PyTime_AsTimeval :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
+    // @(link_name="_PyTime_AsTimeval")
+    // _PyTime_AsTimeval :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
 
-    @(link_name="_PyTime_AsTimeval_noraise")
-    _PyTime_AsTimeval_noraise :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
+    // @(link_name="_PyTime_AsTimeval_noraise")
+    // _PyTime_AsTimeval_noraise :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_AsTimevalTime_t")
     _PyTime_AsTimevalTime_t :: proc(t : i64, secs : ^_libc.time_t, us : ^_c.int, round : _PyTime_round_t) -> _c.int ---;
 
-    @(link_name="_PyTime_FromTimespec")
-    _PyTime_FromTimespec :: proc(tp : ^i64, ts : ^timespec) -> _c.int ---;
+    // @(link_name="_PyTime_FromTimespec")
+    // _PyTime_FromTimespec :: proc(tp : ^i64, ts : ^timespec) -> _c.int ---;
 
-    @(link_name="_PyTime_AsTimespec")
-    _PyTime_AsTimespec :: proc(t : i64, ts : ^timespec) -> _c.int ---;
+    // @(link_name="_PyTime_AsTimespec")
+    // _PyTime_AsTimespec :: proc(t : i64, ts : ^timespec) -> _c.int ---;
 
     @(link_name="_PyTime_MulDiv")
     _PyTime_MulDiv :: proc(ticks : i64, mul : i64, div : i64) -> i64 ---;
@@ -1442,10 +1443,10 @@ foreign python {
     _PyTime_Init :: proc() -> _c.int ---;
 
     @(link_name="_PyTime_localtime")
-    _PyTime_localtime :: proc(t : _libc.time_t, tm : ^tm) -> _c.int ---;
+    _PyTime_localtime :: proc(t : _libc.time_t, tm : ^_libc.tm) -> _c.int ---;
 
     @(link_name="_PyTime_gmtime")
-    _PyTime_gmtime :: proc(t : _libc.time_t, tm : ^tm) -> _c.int ---;
+    _PyTime_gmtime :: proc(t : _libc.time_t, tm : ^_libc.tm) -> _c.int ---;
 
     @(link_name="_PyTime_GetPerfCounter")
     _PyTime_GetPerfCounter :: proc() -> i64 ---;

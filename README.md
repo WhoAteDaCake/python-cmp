@@ -19,3 +19,5 @@ Tasks:
 * Replace time_t with _libc.time_t
 * Replace va_list with _libc.va_list
 * Replace stat with _os.OS_Stat
+* MANUALLY replace tm with _libc.tm 
+* Replace pthread_key_t with u32
