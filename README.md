@@ -13,7 +13,9 @@
 
 Tasks:
 * import _libc "core:c/libc"
+* import _os "core:os"
 * Swap wchar_t for _c.wchar_t
 * Replace FILE with _libc.FILE
 * Replace time_t with _libc.time_t
 * Replace va_list with _libc.va_list
+* Replace stat with _os.OS_Stat

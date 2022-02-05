@@ -4,7 +4,7 @@ foreign import "system:python"
 
 import _c "core:c"
 import _libc "core:c/libc"
-
+import _os "core:os"
 
 Py_uintptr_t :: _c.uintptr_t;
 Py_intptr_t :: _c.intptr_t;
@@ -4856,13 +4856,13 @@ foreign python {
     _Py_device_encoding :: proc(unamed0 : _c.int) -> ^PyObject ---;
 
     @(link_name="_Py_fstat")
-    _Py_fstat :: proc(fd : _c.int, status : ^stat) -> _c.int ---;
+    _Py_fstat :: proc(fd : _c.int, status : ^_os.OS_Stat) -> _c.int ---;
 
     @(link_name="_Py_fstat_noraise")
-    _Py_fstat_noraise :: proc(fd : _c.int, status : ^stat) -> _c.int ---;
+    _Py_fstat_noraise :: proc(fd : _c.int, status : ^_os.OS_Stat) -> _c.int ---;
 
     @(link_name="_Py_stat")
-    _Py_stat :: proc(path : ^PyObject, status : ^stat) -> _c.int ---;
+    _Py_stat :: proc(path : ^PyObject, status : ^_os.OS_Stat) -> _c.int ---;
 
     @(link_name="_Py_open")
     _Py_open :: proc(pathname : cstring, flags : _c.int) -> _c.int ---;
