@@ -1568,7 +1568,7 @@ foreign python {
     PyBytes_FromObject :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyBytes_FromFormatV")
-    PyBytes_FromFormatV :: proc(unamed0 : cstring, unamed1 : va_list) -> ^PyObject ---;
+    PyBytes_FromFormatV :: proc(unamed0 : cstring, unamed1 : _libc.va_list) -> ^PyObject ---;
 
     @(link_name="PyBytes_FromFormat")
     PyBytes_FromFormat :: proc(unamed0 : cstring) -> ^PyObject ---;
@@ -1673,7 +1673,7 @@ foreign python {
     PyUnicode_FromObject :: proc(obj : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyUnicode_FromFormatV")
-    PyUnicode_FromFormatV :: proc(format : cstring, vargs : va_list) -> ^PyObject ---;
+    PyUnicode_FromFormatV :: proc(format : cstring, vargs : _libc.va_list) -> ^PyObject ---;
 
     @(link_name="PyUnicode_FromFormat")
     PyUnicode_FromFormat :: proc(format : cstring) -> ^PyObject ---;
@@ -3473,7 +3473,7 @@ foreign python {
     PyErr_Format :: proc(exception : ^PyObject, format : cstring) -> ^PyObject ---;
 
     @(link_name="PyErr_FormatV")
-    PyErr_FormatV :: proc(exception : ^PyObject, format : cstring, vargs : va_list) -> ^PyObject ---;
+    PyErr_FormatV :: proc(exception : ^PyObject, format : cstring, vargs : _libc.va_list) -> ^PyObject ---;
 
     @(link_name="PyErr_SetImportErrorSubclass")
     PyErr_SetImportErrorSubclass :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject, unamed3 : ^PyObject) -> ^PyObject ---;
@@ -3587,7 +3587,7 @@ foreign python {
     PyOS_snprintf :: proc(str : cstring, size : _c.size_t, format : cstring) -> _c.int ---;
 
     @(link_name="PyOS_vsnprintf")
-    PyOS_vsnprintf :: proc(str : cstring, size : _c.size_t, format : cstring, va : va_list) -> _c.int ---;
+    PyOS_vsnprintf :: proc(str : cstring, size : _c.size_t, format : cstring, va : _libc.va_list) -> _c.int ---;
 
     @(link_name="_PyErr_SetKeyError")
     _PyErr_SetKeyError :: proc(unamed0 : ^PyObject) ---;
@@ -3674,10 +3674,10 @@ foreign python {
     PyArena_AddPyObject :: proc(unamed0 : ^PyArena, unamed1 : ^PyObject) -> _c.int ---;
 
     @(link_name="_Py_VaBuildValue_SizeT")
-    _Py_VaBuildValue_SizeT :: proc(unamed0 : cstring, unamed1 : va_list) -> ^PyObject ---;
+    _Py_VaBuildValue_SizeT :: proc(unamed0 : cstring, unamed1 : _libc.va_list) -> ^PyObject ---;
 
     @(link_name="_Py_VaBuildStack_SizeT")
-    _Py_VaBuildStack_SizeT :: proc(small_stack : ^^PyObject, small_stack_len : _c.ssize_t, format : cstring, va : va_list, p_nargs : ^_c.ssize_t) -> ^^PyObject ---;
+    _Py_VaBuildStack_SizeT :: proc(small_stack : ^^PyObject, small_stack_len : _c.ssize_t, format : cstring, va : _libc.va_list, p_nargs : ^_c.ssize_t) -> ^^PyObject ---;
 
     @(link_name="PyArg_Parse")
     PyArg_Parse :: proc(unamed0 : ^PyObject, unamed1 : cstring) -> _c.int ---;
@@ -3689,10 +3689,10 @@ foreign python {
     PyArg_ParseTupleAndKeywords :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : cstring, unamed3 : ^cstring) -> _c.int ---;
 
     @(link_name="PyArg_VaParse")
-    PyArg_VaParse :: proc(unamed0 : ^PyObject, unamed1 : cstring, unamed2 : va_list) -> _c.int ---;
+    PyArg_VaParse :: proc(unamed0 : ^PyObject, unamed1 : cstring, unamed2 : _libc.va_list) -> _c.int ---;
 
     @(link_name="PyArg_VaParseTupleAndKeywords")
-    PyArg_VaParseTupleAndKeywords :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : cstring, unamed3 : ^cstring, unamed4 : va_list) -> _c.int ---;
+    PyArg_VaParseTupleAndKeywords :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : cstring, unamed3 : ^cstring, unamed4 : _libc.va_list) -> _c.int ---;
 
     @(link_name="PyArg_ValidateKeywordArguments")
     PyArg_ValidateKeywordArguments :: proc(unamed0 : ^PyObject) -> _c.int ---;
@@ -3722,10 +3722,10 @@ foreign python {
     _PyArg_CheckPositional :: proc(unamed0 : cstring, unamed1 : _c.ssize_t, unamed2 : _c.ssize_t, unamed3 : _c.ssize_t) -> _c.int ---;
 
     @(link_name="Py_VaBuildValue")
-    Py_VaBuildValue :: proc(unamed0 : cstring, unamed1 : va_list) -> ^PyObject ---;
+    Py_VaBuildValue :: proc(unamed0 : cstring, unamed1 : _libc.va_list) -> ^PyObject ---;
 
     @(link_name="_Py_VaBuildStack")
-    _Py_VaBuildStack :: proc(small_stack : ^^PyObject, small_stack_len : _c.ssize_t, format : cstring, va : va_list, p_nargs : ^_c.ssize_t) -> ^^PyObject ---;
+    _Py_VaBuildStack :: proc(small_stack : ^^PyObject, small_stack_len : _c.ssize_t, format : cstring, va : _libc.va_list, p_nargs : ^_c.ssize_t) -> ^^PyObject ---;
 
     @(link_name="_PyArg_ParseTupleAndKeywordsFast")
     _PyArg_ParseTupleAndKeywordsFast :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^_PyArg_Parser) -> _c.int ---;
@@ -3737,7 +3737,7 @@ foreign python {
     _PyArg_ParseStackAndKeywords :: proc(args : ^^PyObject, nargs : _c.ssize_t, kwnames : ^PyObject, unamed0 : ^_PyArg_Parser) -> _c.int ---;
 
     @(link_name="_PyArg_VaParseTupleAndKeywordsFast")
-    _PyArg_VaParseTupleAndKeywordsFast :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^_PyArg_Parser, unamed3 : va_list) -> _c.int ---;
+    _PyArg_VaParseTupleAndKeywordsFast :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^_PyArg_Parser, unamed3 : _libc.va_list) -> _c.int ---;
 
     @(link_name="_PyArg_UnpackKeywords")
     _PyArg_UnpackKeywords :: proc(args : ^^PyObject, nargs : _c.ssize_t, kwargs : ^PyObject, kwnames : ^PyObject, parser : ^_PyArg_Parser, minpos : _c.int, maxpos : _c.int, minkw : _c.int, buf : ^^PyObject) -> ^^PyObject ---;
