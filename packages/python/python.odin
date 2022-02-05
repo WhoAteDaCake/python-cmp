@@ -3,6 +3,7 @@ package python
 foreign import "system:python"
 
 import _c "core:c"
+import _libc "core:c/libc"
 
 
 Py_uintptr_t :: _c.uintptr_t;
@@ -225,7 +226,7 @@ _typeobject :: struct {
     tp_version_tag : _c.uint,
     tp_finalize : destructor,
     tp_vectorcall : vectorcallfunc,
-    tp_print : #type proc(unamed0 : ^PyObject, unamed1 : ^FILE, unamed2 : _c.int) -> _c.int,
+    tp_print : #type proc(unamed0 : ^PyObject, unamed1 : ^_libc.FILE, unamed2 : _c.int) -> _c.int,
 };
 
 _object :: struct {
@@ -1294,7 +1295,7 @@ foreign python {
     _PyType_GetTextSignatureFromInternalDoc :: proc(unamed0 : cstring, unamed1 : cstring) -> ^PyObject ---;
 
     @(link_name="PyObject_Print")
-    PyObject_Print :: proc(unamed0 : ^PyObject, unamed1 : ^FILE, unamed2 : _c.int) -> _c.int ---;
+    PyObject_Print :: proc(unamed0 : ^PyObject, unamed1 : ^_libc.FILE, unamed2 : _c.int) -> _c.int ---;
 
     @(link_name="_Py_BreakPoint")
     _Py_BreakPoint :: proc() ---;
@@ -1351,10 +1352,10 @@ foreign python {
     _PyTrash_destroy_chain :: proc() ---;
 
     @(link_name="_PyDebugAllocatorStats")
-    _PyDebugAllocatorStats :: proc(out : ^FILE, block_name : cstring, num_blocks : _c.int, sizeof_block : _c.size_t) ---;
+    _PyDebugAllocatorStats :: proc(out : ^_libc.FILE, block_name : cstring, num_blocks : _c.int, sizeof_block : _c.size_t) ---;
 
     @(link_name="_PyObject_DebugTypeStats")
-    _PyObject_DebugTypeStats :: proc(out : ^FILE) ---;
+    _PyObject_DebugTypeStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="_PyObject_AssertFailed")
     _PyObject_AssertFailed :: proc(obj : ^PyObject, expr : cstring, msg : cstring, file : cstring, line : _c.int, function : cstring) ---;
@@ -1363,19 +1364,19 @@ foreign python {
     _PyObject_CheckConsistency :: proc(op : ^PyObject, check_content : _c.int) -> _c.int ---;
 
     @(link_name="_PyLong_FromTime_t")
-    _PyLong_FromTime_t :: proc(sec : time_t) -> ^PyObject ---;
+    _PyLong_FromTime_t :: proc(sec : _libc.time_t) -> ^PyObject ---;
 
     @(link_name="_PyLong_AsTime_t")
-    _PyLong_AsTime_t :: proc(obj : ^PyObject) -> time_t ---;
+    _PyLong_AsTime_t :: proc(obj : ^PyObject) -> _libc.time_t ---;
 
     @(link_name="_PyTime_ObjectToTime_t")
-    _PyTime_ObjectToTime_t :: proc(obj : ^PyObject, sec : ^time_t, unamed0 : _PyTime_round_t) -> _c.int ---;
+    _PyTime_ObjectToTime_t :: proc(obj : ^PyObject, sec : ^_libc.time_t, unamed0 : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_ObjectToTimeval")
-    _PyTime_ObjectToTimeval :: proc(obj : ^PyObject, sec : ^time_t, usec : ^_c.long, unamed0 : _PyTime_round_t) -> _c.int ---;
+    _PyTime_ObjectToTimeval :: proc(obj : ^PyObject, sec : ^_libc.time_t, usec : ^_c.long, unamed0 : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_ObjectToTimespec")
-    _PyTime_ObjectToTimespec :: proc(obj : ^PyObject, sec : ^time_t, nsec : ^_c.long, unamed0 : _PyTime_round_t) -> _c.int ---;
+    _PyTime_ObjectToTimespec :: proc(obj : ^PyObject, sec : ^_libc.time_t, nsec : ^_c.long, unamed0 : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_FromSeconds")
     _PyTime_FromSeconds :: proc(seconds : _c.int) -> i64 ---;
@@ -1414,7 +1415,7 @@ foreign python {
     _PyTime_AsTimeval_noraise :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_AsTimevalTime_t")
-    _PyTime_AsTimevalTime_t :: proc(t : i64, secs : ^time_t, us : ^_c.int, round : _PyTime_round_t) -> _c.int ---;
+    _PyTime_AsTimevalTime_t :: proc(t : i64, secs : ^_libc.time_t, us : ^_c.int, round : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_FromTimespec")
     _PyTime_FromTimespec :: proc(tp : ^i64, ts : ^timespec) -> _c.int ---;
@@ -1441,10 +1442,10 @@ foreign python {
     _PyTime_Init :: proc() -> _c.int ---;
 
     @(link_name="_PyTime_localtime")
-    _PyTime_localtime :: proc(t : time_t, tm : ^tm) -> _c.int ---;
+    _PyTime_localtime :: proc(t : _libc.time_t, tm : ^tm) -> _c.int ---;
 
     @(link_name="_PyTime_gmtime")
-    _PyTime_gmtime :: proc(t : time_t, tm : ^tm) -> _c.int ---;
+    _PyTime_gmtime :: proc(t : _libc.time_t, tm : ^tm) -> _c.int ---;
 
     @(link_name="_PyTime_GetPerfCounter")
     _PyTime_GetPerfCounter :: proc() -> i64 ---;
@@ -1507,7 +1508,7 @@ foreign python {
     _Py_GetAllocatedBlocks :: proc() -> _c.ssize_t ---;
 
     @(link_name="_PyObject_DebugMallocStats")
-    _PyObject_DebugMallocStats :: proc(out : ^FILE) -> _c.int ---;
+    _PyObject_DebugMallocStats :: proc(out : ^_libc.FILE) -> _c.int ---;
 
     @(link_name="PyObject_GetArenaAllocator")
     PyObject_GetArenaAllocator :: proc(allocator : ^PyObjectArenaAllocator) ---;
@@ -2359,7 +2360,7 @@ foreign python {
     PyFloat_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="_PyFloat_DebugMallocStats")
-    _PyFloat_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyFloat_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="_PyFloat_FormatAdvancedWriter")
     _PyFloat_FormatAdvancedWriter :: proc(writer : ^_PyUnicodeWriter, obj : ^PyObject, format_spec : ^PyObject, start : _c.ssize_t, end : _c.ssize_t) -> _c.int ---;
@@ -2443,7 +2444,7 @@ foreign python {
     _PyTuple_MaybeUntrack :: proc(unamed0 : ^PyObject) ---;
 
     @(link_name="_PyTuple_DebugMallocStats")
-    _PyTuple_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyTuple_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="PyList_New")
     PyList_New :: proc(size : _c.ssize_t) -> ^PyObject ---;
@@ -2485,7 +2486,7 @@ foreign python {
     PyList_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="_PyList_DebugMallocStats")
-    _PyList_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyList_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="PyDict_New")
     PyDict_New :: proc() -> ^PyObject ---;
@@ -2617,7 +2618,7 @@ foreign python {
     _PyDict_DelItemId :: proc(mp : ^PyObject, key : ^_Py_Identifier) -> _c.int ---;
 
     @(link_name="_PyDict_DebugMallocStats")
-    _PyDict_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyDict_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="_PyObjectDict_SetItem")
     _PyObjectDict_SetItem :: proc(tp : ^PyTypeObject, dictptr : ^^PyObject, name : ^PyObject, value : ^PyObject) -> _c.int ---;
@@ -2701,10 +2702,10 @@ foreign python {
     PyCFunction_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="_PyCFunction_DebugMallocStats")
-    _PyCFunction_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyCFunction_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="_PyMethod_DebugMallocStats")
-    _PyMethod_DebugMallocStats :: proc(out : ^FILE) ---;
+    _PyMethod_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
 
     @(link_name="PyModule_NewObject")
     PyModule_NewObject :: proc(name : ^PyObject) -> ^PyObject ---;
@@ -2830,7 +2831,7 @@ foreign python {
     PyObject_AsFileDescriptor :: proc(unamed0 : ^PyObject) -> _c.int ---;
 
     @(link_name="Py_UniversalNewlineFgets")
-    Py_UniversalNewlineFgets :: proc(unamed0 : cstring, unamed1 : _c.int, unamed2 : ^FILE, unamed3 : ^PyObject) -> cstring ---;
+    Py_UniversalNewlineFgets :: proc(unamed0 : cstring, unamed1 : _c.int, unamed2 : ^_libc.FILE, unamed3 : ^PyObject) -> cstring ---;
 
     @(link_name="PyFile_NewStdPrinter")
     PyFile_NewStdPrinter :: proc(unamed0 : _c.int) -> ^PyObject ---;
@@ -3829,19 +3830,19 @@ foreign python {
     PyRun_SimpleStringFlags :: proc(unamed0 : cstring, unamed1 : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_AnyFileExFlags")
-    PyRun_AnyFileExFlags :: proc(fp : ^FILE, filename : cstring, closeit : _c.int, flags : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_AnyFileExFlags :: proc(fp : ^_libc.FILE, filename : cstring, closeit : _c.int, flags : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_SimpleFileExFlags")
-    PyRun_SimpleFileExFlags :: proc(fp : ^FILE, filename : cstring, closeit : _c.int, flags : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_SimpleFileExFlags :: proc(fp : ^_libc.FILE, filename : cstring, closeit : _c.int, flags : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_InteractiveOneFlags")
-    PyRun_InteractiveOneFlags :: proc(fp : ^FILE, filename : cstring, flags : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_InteractiveOneFlags :: proc(fp : ^_libc.FILE, filename : cstring, flags : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_InteractiveOneObject")
-    PyRun_InteractiveOneObject :: proc(fp : ^FILE, filename : ^PyObject, flags : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_InteractiveOneObject :: proc(fp : ^_libc.FILE, filename : ^PyObject, flags : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_InteractiveLoopFlags")
-    PyRun_InteractiveLoopFlags :: proc(fp : ^FILE, filename : cstring, flags : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_InteractiveLoopFlags :: proc(fp : ^_libc.FILE, filename : cstring, flags : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyParser_ASTFromString")
     PyParser_ASTFromString :: proc(s : cstring, filename : cstring, start : _c.int, flags : ^PyCompilerFlags, arena : ^PyArena) -> ^_mod ---;
@@ -3850,10 +3851,10 @@ foreign python {
     PyParser_ASTFromStringObject :: proc(s : cstring, filename : ^PyObject, start : _c.int, flags : ^PyCompilerFlags, arena : ^PyArena) -> ^_mod ---;
 
     @(link_name="PyParser_ASTFromFile")
-    PyParser_ASTFromFile :: proc(fp : ^FILE, filename : cstring, enc : cstring, start : _c.int, ps1 : cstring, ps2 : cstring, flags : ^PyCompilerFlags, errcode : ^_c.int, arena : ^PyArena) -> ^_mod ---;
+    PyParser_ASTFromFile :: proc(fp : ^_libc.FILE, filename : cstring, enc : cstring, start : _c.int, ps1 : cstring, ps2 : cstring, flags : ^PyCompilerFlags, errcode : ^_c.int, arena : ^PyArena) -> ^_mod ---;
 
     @(link_name="PyParser_ASTFromFileObject")
-    PyParser_ASTFromFileObject :: proc(fp : ^FILE, filename : ^PyObject, enc : cstring, start : _c.int, ps1 : cstring, ps2 : cstring, flags : ^PyCompilerFlags, errcode : ^_c.int, arena : ^PyArena) -> ^_mod ---;
+    PyParser_ASTFromFileObject :: proc(fp : ^_libc.FILE, filename : ^PyObject, enc : cstring, start : _c.int, ps1 : cstring, ps2 : cstring, flags : ^PyCompilerFlags, errcode : ^_c.int, arena : ^PyArena) -> ^_mod ---;
 
     @(link_name="PyParser_SimpleParseStringFlags")
     PyParser_SimpleParseStringFlags :: proc(unamed0 : cstring, unamed1 : _c.int, unamed2 : _c.int) -> ^_node ---;
@@ -3862,13 +3863,13 @@ foreign python {
     PyParser_SimpleParseStringFlagsFilename :: proc(unamed0 : cstring, unamed1 : cstring, unamed2 : _c.int, unamed3 : _c.int) -> ^_node ---;
 
     @(link_name="PyParser_SimpleParseFileFlags")
-    PyParser_SimpleParseFileFlags :: proc(unamed0 : ^FILE, unamed1 : cstring, unamed2 : _c.int, unamed3 : _c.int) -> ^_node ---;
+    PyParser_SimpleParseFileFlags :: proc(unamed0 : ^_libc.FILE, unamed1 : cstring, unamed2 : _c.int, unamed3 : _c.int) -> ^_node ---;
 
     @(link_name="PyRun_StringFlags")
     PyRun_StringFlags :: proc(unamed0 : cstring, unamed1 : _c.int, unamed2 : ^PyObject, unamed3 : ^PyObject, unamed4 : ^PyCompilerFlags) -> ^PyObject ---;
 
     @(link_name="PyRun_FileExFlags")
-    PyRun_FileExFlags :: proc(fp : ^FILE, filename : cstring, start : _c.int, globals : ^PyObject, locals : ^PyObject, closeit : _c.int, flags : ^PyCompilerFlags) -> ^PyObject ---;
+    PyRun_FileExFlags :: proc(fp : ^_libc.FILE, filename : cstring, start : _c.int, globals : ^PyObject, locals : ^PyObject, closeit : _c.int, flags : ^PyCompilerFlags) -> ^PyObject ---;
 
     @(link_name="Py_CompileStringExFlags")
     Py_CompileStringExFlags :: proc(str : cstring, filename : cstring, start : _c.int, flags : ^PyCompilerFlags, optimize : _c.int) -> ^PyObject ---;
@@ -3901,40 +3902,40 @@ foreign python {
     PyRun_String :: proc(str : cstring, s : _c.int, g : ^PyObject, l : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyRun_AnyFile")
-    PyRun_AnyFile :: proc(fp : ^FILE, name : cstring) -> _c.int ---;
+    PyRun_AnyFile :: proc(fp : ^_libc.FILE, name : cstring) -> _c.int ---;
 
     @(link_name="PyRun_AnyFileEx")
-    PyRun_AnyFileEx :: proc(fp : ^FILE, name : cstring, closeit : _c.int) -> _c.int ---;
+    PyRun_AnyFileEx :: proc(fp : ^_libc.FILE, name : cstring, closeit : _c.int) -> _c.int ---;
 
     @(link_name="PyRun_AnyFileFlags")
-    PyRun_AnyFileFlags :: proc(unamed0 : ^FILE, unamed1 : cstring, unamed2 : ^PyCompilerFlags) -> _c.int ---;
+    PyRun_AnyFileFlags :: proc(unamed0 : ^_libc.FILE, unamed1 : cstring, unamed2 : ^PyCompilerFlags) -> _c.int ---;
 
     @(link_name="PyRun_SimpleString")
     PyRun_SimpleString :: proc(s : cstring) -> _c.int ---;
 
     @(link_name="PyRun_SimpleFile")
-    PyRun_SimpleFile :: proc(f : ^FILE, p : cstring) -> _c.int ---;
+    PyRun_SimpleFile :: proc(f : ^_libc.FILE, p : cstring) -> _c.int ---;
 
     @(link_name="PyRun_SimpleFileEx")
-    PyRun_SimpleFileEx :: proc(f : ^FILE, p : cstring, c : _c.int) -> _c.int ---;
+    PyRun_SimpleFileEx :: proc(f : ^_libc.FILE, p : cstring, c : _c.int) -> _c.int ---;
 
     @(link_name="PyRun_InteractiveOne")
-    PyRun_InteractiveOne :: proc(f : ^FILE, p : cstring) -> _c.int ---;
+    PyRun_InteractiveOne :: proc(f : ^_libc.FILE, p : cstring) -> _c.int ---;
 
     @(link_name="PyRun_InteractiveLoop")
-    PyRun_InteractiveLoop :: proc(f : ^FILE, p : cstring) -> _c.int ---;
+    PyRun_InteractiveLoop :: proc(f : ^_libc.FILE, p : cstring) -> _c.int ---;
 
     @(link_name="PyRun_File")
-    PyRun_File :: proc(fp : ^FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject) -> ^PyObject ---;
+    PyRun_File :: proc(fp : ^_libc.FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyRun_FileEx")
-    PyRun_FileEx :: proc(fp : ^FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject, c : _c.int) -> ^PyObject ---;
+    PyRun_FileEx :: proc(fp : ^_libc.FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject, c : _c.int) -> ^PyObject ---;
 
     @(link_name="PyRun_FileFlags")
-    PyRun_FileFlags :: proc(fp : ^FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject, flags : ^PyCompilerFlags) -> ^PyObject ---;
+    PyRun_FileFlags :: proc(fp : ^_libc.FILE, p : cstring, s : _c.int, g : ^PyObject, l : ^PyObject, flags : ^PyCompilerFlags) -> ^PyObject ---;
 
     @(link_name="PyOS_Readline")
-    PyOS_Readline :: proc(unamed0 : ^FILE, unamed1 : ^FILE, unamed2 : cstring) -> cstring ---;
+    PyOS_Readline :: proc(unamed0 : ^_libc.FILE, unamed1 : ^_libc.FILE, unamed2 : cstring) -> cstring ---;
 
     @(link_name="Py_Initialize")
     Py_Initialize :: proc() ---;
@@ -4057,7 +4058,7 @@ foreign python {
     _Py_RestoreSignals :: proc() ---;
 
     @(link_name="Py_FdIsInteractive")
-    Py_FdIsInteractive :: proc(unamed0 : ^FILE, unamed1 : cstring) -> _c.int ---;
+    Py_FdIsInteractive :: proc(unamed0 : ^_libc.FILE, unamed1 : cstring) -> _c.int ---;
 
     @(link_name="_Py_SetProgramFullPath")
     _Py_SetProgramFullPath :: proc(unamed0 : ^_c.wchar_t) ---;
@@ -4870,13 +4871,13 @@ foreign python {
     _Py_open_noraise :: proc(pathname : cstring, flags : _c.int) -> _c.int ---;
 
     @(link_name="_Py_wfopen")
-    _Py_wfopen :: proc(path : ^_c.wchar_t, mode : ^_c.wchar_t) -> ^FILE ---;
+    _Py_wfopen :: proc(path : ^_c.wchar_t, mode : ^_c.wchar_t) -> ^_libc.FILE ---;
 
     @(link_name="_Py_fopen")
-    _Py_fopen :: proc(pathname : cstring, mode : cstring) -> ^FILE ---;
+    _Py_fopen :: proc(pathname : cstring, mode : cstring) -> ^_libc.FILE ---;
 
     @(link_name="_Py_fopen_obj")
-    _Py_fopen_obj :: proc(path : ^PyObject, mode : cstring) -> ^FILE ---;
+    _Py_fopen_obj :: proc(path : ^PyObject, mode : cstring) -> ^_libc.FILE ---;
 
     @(link_name="_Py_read")
     _Py_read :: proc(fd : _c.int, buf : rawptr, count : _c.size_t) -> _c.ssize_t ---;

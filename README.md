@@ -10,3 +10,10 @@
 * Take inspiration and investigate [pyston](https://github.com/pyston/pyston)
 * Create a python interpreter in odin
 * Create a python -> Odin/C compiler 
+
+Tasks:
+* import _libc "core:c/libc"
+* Swap wchar_t for _c.wchar_t
+* Replace FILE with _libc.FILE
+* Replace time_t with _libc.time_t
+* Replace va_list with _libc.va_list
