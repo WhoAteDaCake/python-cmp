@@ -1,3 +1,1 @@
-import platform
-
-print(platform.release())
+print("Hello world")

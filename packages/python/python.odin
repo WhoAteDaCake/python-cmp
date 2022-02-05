@@ -1,10 +1,11 @@
 package python
+import _os "core:os"
+import _libc "core:c/libc"
 
-foreign import python "system:python3.9"
+foreign import "system:python"
 
 import _c "core:c"
-import _libc "core:c/libc"
-import _os "core:os"
+
 
 Py_uintptr_t :: _c.uintptr_t;
 Py_intptr_t :: _c.intptr_t;
@@ -12,7 +13,8 @@ Py_ssize_t :: _c.ssize_t;
 Py_hash_t :: _c.ssize_t;
 Py_uhash_t :: _c.size_t;
 Py_ssize_clean_t :: _c.int;
-
+PyTypeObject :: _typeobject;
+PyObject :: _object;
 unaryfunc :: #type proc(unamed0 : ^PyObject) -> ^PyObject;
 binaryfunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject;
 ternaryfunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject;
@@ -27,10 +29,10 @@ objobjproc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> _c.int;
 visitproc :: #type proc(unamed0 : ^PyObject, unamed1 : rawptr) -> _c.int;
 traverseproc :: #type proc(unamed0 : ^PyObject, unamed1 : visitproc, unamed2 : rawptr) -> _c.int;
 freefunc :: #type proc(unamed0 : rawptr);
-destructor :: #type proc(unamed0 : ^_object);
-getattrfunc :: #type proc(unamed0 : ^_object, unamed1 : cstring) -> ^_object;
-getattrofunc :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject;
-setattrfunc :: proc(unamed0 : ^PyObject, unamed1 : cstring, unamed2 : ^PyObject) -> _c.int;
+destructor :: #type proc(unamed0 : ^PyObject);
+getattrfunc :: #type proc(unamed0 : ^PyObject, unamed1 : cstring) -> ^PyObject;
+getattrofunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject;
+setattrfunc :: #type proc(unamed0 : ^PyObject, unamed1 : cstring, unamed2 : ^PyObject) -> _c.int;
 setattrofunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> _c.int;
 reprfunc :: #type proc(unamed0 : ^PyObject) -> ^PyObject;
 hashfunc :: #type proc(unamed0 : ^PyObject) -> _c.ssize_t;
@@ -40,14 +42,13 @@ iternextfunc :: #type proc(unamed0 : ^PyObject) -> ^PyObject;
 descrgetfunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject;
 descrsetfunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> _c.int;
 initproc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> _c.int;
-newfunc :: #type proc(unamed0 : ^_typeobject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject;
-allocfunc :: #type proc(unamed0 : ^_typeobject, unamed1 : _c.ssize_t) -> ^PyObject;
+newfunc :: #type proc(unamed0 : ^PyTypeObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject;
+allocfunc :: #type proc(unamed0 : ^PyTypeObject, unamed1 : _c.ssize_t) -> ^PyObject;
 Py_buffer :: bufferinfo;
 getbufferproc :: #type proc(unamed0 : ^PyObject, unamed1 : ^Py_buffer, unamed2 : _c.int) -> _c.int;
 releasebufferproc :: #type proc(unamed0 : ^PyObject, unamed1 : ^Py_buffer);
 vectorcallfunc :: #type proc(callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject;
 printfunc :: _c.ssize_t;
-PyTypeObject :: _typeobject;
 PyHeapTypeObject :: _heaptypeobject;
 _PyTime_t :: i64;
 Py_UCS4 :: u32;
@@ -65,18 +66,18 @@ PyCFunction :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject
 _PyCFunctionFast :: #type proc(unamed0 : ^PyObject, unamed1 : ^^PyObject, unamed2 : _c.ssize_t) -> ^PyObject;
 PyCFunctionWithKeywords :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject;
 _PyCFunctionFastWithKeywords :: #type proc(unamed0 : ^PyObject, unamed1 : ^^PyObject, unamed2 : _c.ssize_t, unamed3 : ^PyObject) -> ^PyObject;
-PyNoArgsFunction :: #type proc(unamed0 : ^PyObject) -> ^PyObject;
+PyCMethod :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyTypeObject, unamed2 : ^^PyObject, unamed3 : _c.size_t, unamed4 : ^PyObject) -> ^PyObject;
 Py_OpenCodeHookFunction :: #type proc(unamed0 : ^PyObject, unamed1 : rawptr) -> ^PyObject;
 PyCapsule_Destructor :: #type proc(unamed0 : ^PyObject);
+_Py_CODEUNIT :: u16;
+PyAddrPair :: _addr_pair;
+PyFrameObject :: _frame;
 PyTracebackObject :: _traceback;
-PyThread_type_lock :: rawptr;
-PyThread_type_sema :: rawptr;
-Py_tss_t :: _Py_tss_t;
 PyThreadState :: _ts;
 PyInterpreterState :: _is;
-Py_tracefunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^_frame, unamed2 : _c.int, unamed3 : ^PyObject) -> _c.int;
+Py_tracefunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^PyFrameObject, unamed2 : _c.int, unamed3 : ^PyObject) -> _c.int;
 _PyErr_StackItem :: _err_stackitem;
-PyThreadFrameGetter :: #type proc(self_ : ^PyThreadState) -> ^_frame;
+_PyFrameEvalFunction :: #type proc(tstate : ^PyThreadState, unamed0 : ^PyFrameObject, unamed1 : _c.int) -> ^PyObject;
 _PyCrossInterpreterData :: _xid;
 crossinterpdatafunc :: #type proc(unamed0 : ^PyObject, unamed1 : ^_xid) -> _c.int;
 getter :: #type proc(unamed0 : ^PyObject, unamed1 : rawptr) -> ^PyObject;
@@ -86,19 +87,21 @@ wrapperfunc_kwds :: #type proc(self : ^PyObject, args : ^PyObject, wrapped : raw
 PyWeakReference :: _PyWeakReference;
 PyStructSequence :: PyTupleObject;
 PyEnvironmentErrorObject :: PyOSErrorObject;
+PyThread_type_lock :: rawptr;
+Py_tss_t :: _Py_tss_t;
 PyContext :: _pycontextobject;
 PyContextVar :: _pycontextvarobject;
 PyContextToken :: _pycontexttokenobject;
 PyArena :: _arena;
-_Py_CODEUNIT :: u16;
-PyAddrPair :: _addr_pair;
 PyOS_sighandler_t :: #type proc(unamed0 : _c.int);
 Py_AuditHookFunction :: #type proc(unamed0 : cstring, unamed1 : ^PyObject, unamed2 : rawptr) -> _c.int;
 
-AnonymousEnum0 :: enum i32 {
-    TRACEMALLOC_NOT_INITIALIZED,
-    TRACEMALLOC_INITIALIZED,
-    TRACEMALLOC_FINALIZED,
+_PyTime_round_t :: enum i32 {
+    PyTime_ROUND_FLOOR = 0,
+    PyTime_ROUND_CEILING = 1,
+    PyTime_ROUND_HALF_EVEN = 2,
+    PyTime_ROUND_UP = 3,
+    PyTime_ROUND_TIMEOUT = 3,
 };
 
 PyMemAllocatorDomain :: enum i32 {
@@ -117,14 +120,6 @@ PyMemAllocatorName :: enum i32 {
     PYMEM_ALLOCATOR_PYMALLOC_DEBUG = 6,
 };
 
-_PyTime_round_t :: enum i32 {
-    PyTime_ROUND_FLOOR = 0,
-    PyTime_ROUND_CEILING = 1,
-    PyTime_ROUND_HALF_EVEN = 2,
-    PyTime_ROUND_UP = 3,
-    PyTime_ROUND_TIMEOUT = 3,
-};
-
 PyUnicode_Kind :: enum i32 {
     PyUnicode_WCHAR_KIND = 0,
     PyUnicode_1BYTE_KIND = 1,
@@ -132,21 +127,21 @@ PyUnicode_Kind :: enum i32 {
     PyUnicode_4BYTE_KIND = 4,
 };
 
-PyLockStatus :: enum i32 {
-    PY_LOCK_FAILURE = 0,
-    PY_LOCK_ACQUIRED = 1,
-    PY_LOCK_INTR,
-};
-
 PyGILState_STATE :: enum i32 {
     PyGILState_LOCKED,
     PyGILState_UNLOCKED,
 };
 
-AnonymousEnum5 :: enum i32 {
+AnonymousEnum4 :: enum i32 {
     PyStatus_TYPE_OK = 0,
     PyStatus_TYPE_ERROR = 1,
     PyStatus_TYPE_EXIT = 2,
+};
+
+PyLockStatus :: enum i32 {
+    PY_LOCK_FAILURE = 0,
+    PY_LOCK_ACQUIRED = 1,
+    PY_LOCK_INTR,
 };
 
 _Py_error_handler :: enum i32 {
@@ -161,19 +156,10 @@ _Py_error_handler :: enum i32 {
     Py_ERROR_OTHER,
 };
 
-_PyTraceMalloc_Config :: struct {
-    initialized : AnonymousEnum0,
-    tracing : _c.int,
-    max_nframe : _c.int,
-    use_domain : _c.int,
-};
-
-PyMemAllocatorEx :: struct {
-    ctx : rawptr,
-    malloc : #type proc(ctx : rawptr, size : _c.size_t) -> rawptr,
-    calloc : #type proc(ctx : rawptr, nelem : _c.size_t, elsize : _c.size_t) -> rawptr,
-    realloc : #type proc(ctx : rawptr, ptr : rawptr, new_size : _c.size_t) -> rawptr,
-    free : #type proc(ctx : rawptr, ptr : rawptr),
+_PyConfigInitEnum :: enum i32 {
+    PyConfig_INIT_COMPAT = 1,
+    PyConfig_INIT_PYTHON = 2,
+    PyConfig_INIT_ISOLATED = 3,
 };
 
 _typeobject :: struct {
@@ -226,15 +212,12 @@ _typeobject :: struct {
     tp_version_tag : _c.uint,
     tp_finalize : destructor,
     tp_vectorcall : vectorcallfunc,
-    tp_print : #type proc(unamed0 : ^PyObject, unamed1 : ^_libc.FILE, unamed2 : _c.int) -> _c.int,
 };
 
 _object :: struct {
     ob_refcnt : _c.ssize_t,
-    ob_type : ^_typeobject,
+    ob_type : ^PyTypeObject,
 };
-
-PyObject :: _object;
 
 PyVarObject :: struct {
     ob_base : PyObject,
@@ -373,6 +356,43 @@ _heaptypeobject :: struct {
     ht_slots : ^PyObject,
     ht_qualname : ^PyObject,
     ht_cached_keys : ^_dictkeysobject,
+    ht_module : ^PyObject,
+};
+
+_ts :: struct {
+    prev : ^_ts,
+    next : ^_ts,
+    interp : ^PyInterpreterState,
+    frame : ^PyFrameObject,
+    recursion_depth : _c.int,
+    overflowed : _c.char,
+    recursion_critical : _c.char,
+    stackcheck_counter : _c.int,
+    tracing : _c.int,
+    use_tracing : _c.int,
+    c_profilefunc : Py_tracefunc,
+    c_tracefunc : Py_tracefunc,
+    c_profileobj : ^PyObject,
+    c_traceobj : ^PyObject,
+    curexc_type : ^PyObject,
+    curexc_value : ^PyObject,
+    curexc_traceback : ^PyObject,
+    exc_state : _PyErr_StackItem,
+    exc_info : ^_PyErr_StackItem,
+    dict : ^PyObject,
+    gilstate_counter : _c.int,
+    async_exc : ^PyObject,
+    thread_id : _c.ulong,
+    trash_delete_nesting : _c.int,
+    trash_delete_later : ^PyObject,
+    on_delete : #type proc(unamed0 : rawptr),
+    on_delete_data : rawptr,
+    coroutine_origin_tracking_depth : _c.int,
+    async_gen_firstiter : ^PyObject,
+    async_gen_finalizer : ^PyObject,
+    _context : ^PyObject,
+    context_ver : u64,
+    id : u64,
 };
 
 _Py_clock_info_t :: struct {
@@ -382,33 +402,36 @@ _Py_clock_info_t :: struct {
     resolution : _c.double,
 };
 
+PyMemAllocatorEx :: struct {
+    ctx : rawptr,
+    malloc : #type proc(ctx : rawptr, size : _c.size_t) -> rawptr,
+    calloc : #type proc(ctx : rawptr, nelem : _c.size_t, elsize : _c.size_t) -> rawptr,
+    realloc : #type proc(ctx : rawptr, ptr : rawptr, new_size : _c.size_t) -> rawptr,
+    free : #type proc(ctx : rawptr, ptr : rawptr),
+};
+
 PyObjectArenaAllocator :: struct {
     ctx : rawptr,
     alloc : #type proc(ctx : rawptr, size : _c.size_t) -> rawptr,
     free : #type proc(ctx : rawptr, ptr : rawptr, size : _c.size_t),
 };
 
-PyGC_Head :: struct {
-    gc_next : _c.uintptr_t,
-    gc_prev : _c.uintptr_t,
-};
-
-AnonymousStruct12 :: struct {
+AnonymousStruct11 :: struct {
     prefix : _c.ssize_t,
     suffix : _c.ssize_t,
 };
 
-AnonymousStruct13 :: struct {
+AnonymousStruct12 :: struct {
     k0 : u64,
     k1 : u64,
 };
 
-AnonymousStruct14 :: struct {
+AnonymousStruct13 :: struct {
     padding : [16]_c.uchar,
     suffix : _c.ssize_t,
 };
 
-AnonymousStruct15 :: struct {
+AnonymousStruct14 :: struct {
     padding : [16]_c.uchar,
     hashsalt : _c.ssize_t,
 };
@@ -425,7 +448,7 @@ PyByteArrayObject :: struct {
     ob_alloc : _c.ssize_t,
     ob_bytes : cstring,
     ob_start : cstring,
-    ob_exports : _c.int,
+    ob_exports : _c.ssize_t,
 };
 
 PyBytesObject :: struct {
@@ -444,7 +467,7 @@ _PyBytesWriter :: struct {
     small_buffer : [512]_c.char,
 };
 
-AnonymousStruct21 :: struct {
+AnonymousStruct20 :: struct {
     interned : _c.uint,
     kind : _c.uint,
     compact : _c.uint,
@@ -457,7 +480,7 @@ PyASCIIObject :: struct {
     ob_base : PyObject,
     length : _c.ssize_t,
     hash : _c.ssize_t,
-    state : AnonymousStruct21,
+    state : AnonymousStruct20,
     wstr : ^_c.wchar_t,
 };
 
@@ -576,6 +599,11 @@ PyCFunctionObject :: struct {
     vectorcall : vectorcallfunc,
 };
 
+PyCMethodObject :: struct {
+    func : PyCFunctionObject,
+    mm_class : ^PyTypeObject,
+};
+
 PyModuleDef :: struct {
     m_base : PyModuleDef_Base,
     m_name : cstring,
@@ -630,12 +658,47 @@ PyInstanceMethodObject :: struct {
     func : ^PyObject,
 };
 
+PyCodeObject :: struct {
+    ob_base : PyObject,
+    co_argcount : _c.int,
+    co_posonlyargcount : _c.int,
+    co_kwonlyargcount : _c.int,
+    co_nlocals : _c.int,
+    co_stacksize : _c.int,
+    co_flags : _c.int,
+    co_firstlineno : _c.int,
+    co_code : ^PyObject,
+    co_consts : ^PyObject,
+    co_names : ^PyObject,
+    co_varnames : ^PyObject,
+    co_freevars : ^PyObject,
+    co_cellvars : ^PyObject,
+    co_cell2arg : ^_c.ssize_t,
+    co_filename : ^PyObject,
+    co_name : ^PyObject,
+    co_lnotab : ^PyObject,
+    co_zombieframe : rawptr,
+    co_weakreflist : ^PyObject,
+    co_extra : rawptr,
+    co_opcache_map : ^_c.uchar,
+    co_opcache : ^_PyOpcache,
+    co_opcache_flag : _c.int,
+    co_opcache_size : _c.uchar,
+};
+
+_PyOpcache :: struct {};
+
+_addr_pair :: struct {
+    ap_lower : _c.int,
+    ap_upper : _c.int,
+};
+
 _frame :: struct {};
 
 _traceback :: struct {
     ob_base : PyObject,
     tb_next : ^_traceback,
-    tb_frame : ^_frame,
+    tb_frame : ^PyFrameObject,
     tb_lasti : _c.int,
     tb_lineno : _c.int,
 };
@@ -652,52 +715,10 @@ PyCellObject :: struct {
     ob_ref : ^PyObject,
 };
 
-_Py_tss_t :: struct {
-    is_initialized : _c.int,
-    key: u32,
-    // key : pthread_key_t,
-};
-
-_ts :: struct {
-    prev : ^_ts,
-    next : ^_ts,
-    interp : ^PyInterpreterState,
-    frame : ^_frame,
-    recursion_depth : _c.int,
-    overflowed : _c.char,
-    recursion_critical : _c.char,
-    stackcheck_counter : _c.int,
-    tracing : _c.int,
-    use_tracing : _c.int,
-    c_profilefunc : Py_tracefunc,
-    c_tracefunc : Py_tracefunc,
-    c_profileobj : ^PyObject,
-    c_traceobj : ^PyObject,
-    curexc_type : ^PyObject,
-    curexc_value : ^PyObject,
-    curexc_traceback : ^PyObject,
-    exc_state : _PyErr_StackItem,
-    exc_info : ^_PyErr_StackItem,
-    dict : ^PyObject,
-    gilstate_counter : _c.int,
-    async_exc : ^PyObject,
-    thread_id : _c.ulong,
-    trash_delete_nesting : _c.int,
-    trash_delete_later : ^PyObject,
-    on_delete : #type proc(unamed0 : rawptr),
-    on_delete_data : rawptr,
-    coroutine_origin_tracking_depth : _c.int,
-    async_gen_firstiter : ^PyObject,
-    async_gen_finalizer : ^PyObject,
-    _context : ^PyObject,
-    context_ver : u64,
-    id : u64,
-};
-
 _is :: struct {};
 
 PyStatus :: struct {
-    type : AnonymousEnum5,
+    type : AnonymousEnum4,
     func : cstring,
     err_msg : cstring,
     exitcode : _c.int,
@@ -730,10 +751,10 @@ PyConfig :: struct {
     use_hash_seed : _c.int,
     hash_seed : _c.ulong,
     faulthandler : _c.int,
+    use_peg_parser : _c.int,
     tracemalloc : _c.int,
     import_time : _c.int,
     show_ref_count : _c.int,
-    show_alloc_count : _c.int,
     dump_refs : _c.int,
     malloc_stats : _c.int,
     filesystem_encoding : ^_c.wchar_t,
@@ -770,12 +791,15 @@ PyConfig :: struct {
     base_prefix : ^_c.wchar_t,
     exec_prefix : ^_c.wchar_t,
     base_exec_prefix : ^_c.wchar_t,
+    platlibdir : ^_c.wchar_t,
     skip_source_first_line : _c.int,
     run_command : ^_c.wchar_t,
     run_module : ^_c.wchar_t,
     run_filename : ^_c.wchar_t,
     install_importlib : _c.int,
     init_main : _c.int,
+    isolated_interpreter : _c.int,
+    orig_argv : PyWideStringList,
 };
 
 _err_stackitem :: struct {
@@ -795,7 +819,7 @@ _xid :: struct {
 
 PyGenObject :: struct {
     ob_base : PyObject,
-    gi_frame : ^_frame,
+    gi_frame : ^PyFrameObject,
     gi_running : _c.char,
     gi_code : ^PyObject,
     gi_weakreflist : ^PyObject,
@@ -806,7 +830,7 @@ PyGenObject :: struct {
 
 PyCoroObject :: struct {
     ob_base : PyObject,
-    cr_frame : ^_frame,
+    cr_frame : ^PyFrameObject,
     cr_running : _c.char,
     cr_code : ^PyObject,
     cr_weakreflist : ^PyObject,
@@ -818,7 +842,7 @@ PyCoroObject :: struct {
 
 PyAsyncGenObject :: struct {
     ob_base : PyObject,
-    ag_frame : ^_frame,
+    ag_frame : ^PyFrameObject,
     ag_running : _c.char,
     ag_code : ^PyObject,
     ag_weakreflist : ^PyObject,
@@ -982,6 +1006,11 @@ PyStopIterationObject :: struct {
     value : ^PyObject,
 };
 
+_Py_tss_t :: struct {
+    is_initialized : _c.int,
+    key : u32,
+};
+
 _pycontextobject :: struct {};
 
 _pycontextvarobject :: struct {};
@@ -1002,41 +1031,6 @@ _PyArg_Parser :: struct {
     next : ^_PyArg_Parser,
 };
 
-_PyOpcache :: struct {};
-
-PyCodeObject :: struct {
-    ob_base : PyObject,
-    co_argcount : _c.int,
-    co_posonlyargcount : _c.int,
-    co_kwonlyargcount : _c.int,
-    co_nlocals : _c.int,
-    co_stacksize : _c.int,
-    co_flags : _c.int,
-    co_firstlineno : _c.int,
-    co_code : ^PyObject,
-    co_consts : ^PyObject,
-    co_names : ^PyObject,
-    co_varnames : ^PyObject,
-    co_freevars : ^PyObject,
-    co_cellvars : ^PyObject,
-    co_cell2arg : ^_c.ssize_t,
-    co_filename : ^PyObject,
-    co_name : ^PyObject,
-    co_lnotab : ^PyObject,
-    co_zombieframe : rawptr,
-    co_weakreflist : ^PyObject,
-    co_extra : rawptr,
-    co_opcache_map : ^_c.uchar,
-    co_opcache : ^_PyOpcache,
-    co_opcache_flag : _c.int,
-    co_opcache_size : _c.uchar,
-};
-
-_addr_pair :: struct {
-    ap_lower : _c.int,
-    ap_upper : _c.int,
-};
-
 _node :: struct {};
 
 PyCompilerFlags :: struct {
@@ -1051,6 +1045,11 @@ PyFutureFeatures :: struct {
 
 _mod :: struct {};
 
+_PyASTOptimizeState :: struct {
+    optimize : _c.int,
+    ff_features : _c.int,
+};
+
 symtable :: struct {};
 
 _inittab :: struct {
@@ -1064,12 +1063,29 @@ _frozen :: struct {
     size : _c.int,
 };
 
+pyruntimestate :: struct {};
+
+_PyArgv :: struct {
+    argc : _c.ssize_t,
+    use_bytes_argv : _c.int,
+    bytes_argv : ^cstring,
+    wchar_argv : ^^_c.wchar_t,
+};
+
+_PyPreCmdline :: struct {
+    argv : PyWideStringList,
+    xoptions : PyWideStringList,
+    isolated : _c.int,
+    use_environment : _c.int,
+    dev_mode : _c.int,
+};
+
 _Py_HashSecret_t :: struct #raw_union {
     uc : [24]_c.uchar,
-    fnv : AnonymousStruct12,
-    siphash : AnonymousStruct13,
-    djbx33a : AnonymousStruct14,
-    expat : AnonymousStruct15,
+    fnv : AnonymousStruct11,
+    siphash : AnonymousStruct12,
+    djbx33a : AnonymousStruct13,
+    expat : AnonymousStruct14,
 };
 
 AnonymousUnion1 :: struct #raw_union {
@@ -1088,50 +1104,20 @@ foreign python {
     @(link_name="_Py_set_387controlword")
     _Py_set_387controlword :: proc(unamed0 : _c.ushort) ---;
 
-    @(link_name="PyMem_Malloc")
-    PyMem_Malloc :: proc(size : _c.size_t) -> rawptr ---;
+    @(link_name="_Py_bit_length")
+    _Py_bit_length :: proc(d : _c.ulong) -> _c.uint ---;
 
-    @(link_name="PyMem_Realloc")
-    PyMem_Realloc :: proc(ptr : rawptr, new_size : _c.size_t) -> rawptr ---;
+    @(link_name="_Py_IS_TYPE")
+    _Py_IS_TYPE :: proc(ob : ^PyObject, type : ^PyTypeObject) -> _c.int ---;
 
-    @(link_name="PyMem_Free")
-    PyMem_Free :: proc(ptr : rawptr) ---;
+    @(link_name="_Py_SET_REFCNT")
+    _Py_SET_REFCNT :: proc(ob : ^PyObject, refcnt : _c.ssize_t) ---;
 
-    @(link_name="PyMem_RawMalloc")
-    PyMem_RawMalloc :: proc(size : _c.size_t) -> rawptr ---;
+    @(link_name="_Py_SET_TYPE")
+    _Py_SET_TYPE :: proc(ob : ^PyObject, type : ^PyTypeObject) ---;
 
-    @(link_name="PyMem_RawCalloc")
-    PyMem_RawCalloc :: proc(nelem : _c.size_t, elsize : _c.size_t) -> rawptr ---;
-
-    @(link_name="PyMem_RawRealloc")
-    PyMem_RawRealloc :: proc(ptr : rawptr, new_size : _c.size_t) -> rawptr ---;
-
-    @(link_name="PyMem_RawFree")
-    PyMem_RawFree :: proc(ptr : rawptr) ---;
-
-    @(link_name="_PyMem_GetCurrentAllocatorName")
-    _PyMem_GetCurrentAllocatorName :: proc() -> cstring ---;
-
-    @(link_name="PyMem_Calloc")
-    PyMem_Calloc :: proc(nelem : _c.size_t, elsize : _c.size_t) -> rawptr ---;
-
-    @(link_name="_PyMem_RawStrdup")
-    _PyMem_RawStrdup :: proc(str : cstring) -> cstring ---;
-
-    @(link_name="_PyMem_Strdup")
-    _PyMem_Strdup :: proc(str : cstring) -> cstring ---;
-
-    @(link_name="_PyMem_RawWcsdup")
-    _PyMem_RawWcsdup :: proc(str : ^_c.wchar_t) -> ^_c.wchar_t ---;
-
-    @(link_name="PyMem_GetAllocator")
-    PyMem_GetAllocator :: proc(domain : PyMemAllocatorDomain, allocator : ^PyMemAllocatorEx) ---;
-
-    @(link_name="PyMem_SetAllocator")
-    PyMem_SetAllocator :: proc(domain : PyMemAllocatorDomain, allocator : ^PyMemAllocatorEx) ---;
-
-    @(link_name="PyMem_SetupDebugHooks")
-    PyMem_SetupDebugHooks :: proc() ---;
+    @(link_name="_Py_SET_SIZE")
+    _Py_SET_SIZE :: proc(ob : ^PyVarObject, size : _c.ssize_t) ---;
 
     @(link_name="PyType_FromSpec")
     PyType_FromSpec :: proc(unamed0 : ^PyType_Spec) -> ^PyObject ---;
@@ -1140,28 +1126,37 @@ foreign python {
     PyType_FromSpecWithBases :: proc(unamed0 : ^PyType_Spec, unamed1 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyType_GetSlot")
-    PyType_GetSlot :: proc(unamed0 : ^_typeobject, unamed1 : _c.int) -> rawptr ---;
+    PyType_GetSlot :: proc(unamed0 : ^PyTypeObject, unamed1 : _c.int) -> rawptr ---;
+
+    @(link_name="PyType_FromModuleAndSpec")
+    PyType_FromModuleAndSpec :: proc(unamed0 : ^PyObject, unamed1 : ^PyType_Spec, unamed2 : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="PyType_GetModule")
+    PyType_GetModule :: proc(unamed0 : ^_typeobject) -> ^PyObject ---;
+
+    @(link_name="PyType_GetModuleState")
+    PyType_GetModuleState :: proc(unamed0 : ^_typeobject) -> rawptr ---;
 
     @(link_name="PyType_IsSubtype")
-    PyType_IsSubtype :: proc(unamed0 : ^_typeobject, unamed1 : ^_typeobject) -> _c.int ---;
+    PyType_IsSubtype :: proc(unamed0 : ^PyTypeObject, unamed1 : ^PyTypeObject) -> _c.int ---;
 
     @(link_name="PyType_GetFlags")
-    PyType_GetFlags :: proc(unamed0 : ^_typeobject) -> _c.ulong ---;
+    PyType_GetFlags :: proc(unamed0 : ^PyTypeObject) -> _c.ulong ---;
 
     @(link_name="PyType_Ready")
-    PyType_Ready :: proc(unamed0 : ^_typeobject) -> _c.int ---;
+    PyType_Ready :: proc(unamed0 : ^PyTypeObject) -> _c.int ---;
 
     @(link_name="PyType_GenericAlloc")
-    PyType_GenericAlloc :: proc(unamed0 : ^_typeobject, unamed1 : _c.ssize_t) -> ^PyObject ---;
+    PyType_GenericAlloc :: proc(unamed0 : ^PyTypeObject, unamed1 : _c.ssize_t) -> ^PyObject ---;
 
     @(link_name="PyType_GenericNew")
-    PyType_GenericNew :: proc(unamed0 : ^_typeobject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
+    PyType_GenericNew :: proc(unamed0 : ^PyTypeObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyType_ClearCache")
     PyType_ClearCache :: proc() -> _c.uint ---;
 
     @(link_name="PyType_Modified")
-    PyType_Modified :: proc(unamed0 : ^_typeobject) ---;
+    PyType_Modified :: proc(unamed0 : ^PyTypeObject) ---;
 
     @(link_name="PyObject_Repr")
     PyObject_Repr :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
@@ -1238,15 +1233,6 @@ foreign python {
     @(link_name="Py_ReprLeave")
     Py_ReprLeave :: proc(unamed0 : ^PyObject) ---;
 
-    @(link_name="_PyTraceMalloc_NewReference")
-    _PyTraceMalloc_NewReference :: proc(op : ^PyObject) -> _c.int ---;
-
-    @(link_name="_Py_NewReference")
-    _Py_NewReference :: proc(op : ^PyObject) ---;
-
-    @(link_name="_Py_ForgetReference")
-    _Py_ForgetReference :: proc(op : ^PyObject) ---;
-
     @(link_name="_Py_Dealloc")
     _Py_Dealloc :: proc(unamed0 : ^PyObject) ---;
 
@@ -1254,7 +1240,7 @@ foreign python {
     _Py_INCREF :: proc(op : ^PyObject) ---;
 
     @(link_name="_Py_DECREF")
-    _Py_DECREF :: proc(filename : cstring, lineno : _c.int, op : ^PyObject) ---;
+    _Py_DECREF :: proc(op : ^PyObject) ---;
 
     @(link_name="_Py_XINCREF")
     _Py_XINCREF :: proc(op : ^PyObject) ---;
@@ -1268,11 +1254,11 @@ foreign python {
     @(link_name="Py_DecRef")
     Py_DecRef :: proc(unamed0 : ^PyObject) ---;
 
-    @(link_name="_PyTrash_thread_deposit_object")
-    _PyTrash_thread_deposit_object :: proc(unamed0 : ^PyObject) ---;
+    @(link_name="_Py_NewReference")
+    _Py_NewReference :: proc(op : ^PyObject) ---;
 
-    @(link_name="_PyTrash_thread_destroy_chain")
-    _PyTrash_thread_destroy_chain :: proc() ---;
+    @(link_name="_PyTraceMalloc_NewReference")
+    _PyTraceMalloc_NewReference :: proc(op : ^PyObject) -> _c.int ---;
 
     @(link_name="_PyType_Name")
     _PyType_Name :: proc(unamed0 : ^PyTypeObject) -> cstring ---;
@@ -1325,6 +1311,9 @@ foreign python {
     @(link_name="_PyObject_LookupAttrId")
     _PyObject_LookupAttrId :: proc(unamed0 : ^PyObject, unamed1 : ^_Py_Identifier, unamed2 : ^^PyObject) -> _c.int ---;
 
+    @(link_name="_PyObject_GetMethod")
+    _PyObject_GetMethod :: proc(obj : ^PyObject, name : ^PyObject, method : ^^PyObject) -> _c.int ---;
+
     @(link_name="_PyObject_GetDictPtr")
     _PyObject_GetDictPtr :: proc(unamed0 : ^PyObject) -> ^^PyObject ---;
 
@@ -1343,14 +1332,8 @@ foreign python {
     @(link_name="_PyObject_GenericSetAttrWithDict")
     _PyObject_GenericSetAttrWithDict :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject, unamed3 : ^PyObject) -> _c.int ---;
 
-    @(link_name="_Py_Dealloc_inline")
-    _Py_Dealloc_inline :: proc(op : ^PyObject) ---;
-
-    @(link_name="_PyTrash_deposit_object")
-    _PyTrash_deposit_object :: proc(unamed0 : ^PyObject) ---;
-
-    @(link_name="_PyTrash_destroy_chain")
-    _PyTrash_destroy_chain :: proc() ---;
+    @(link_name="_PyObject_FunctionStr")
+    _PyObject_FunctionStr :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyDebugAllocatorStats")
     _PyDebugAllocatorStats :: proc(out : ^_libc.FILE, block_name : cstring, num_blocks : _c.int, sizeof_block : _c.size_t) ---;
@@ -1363,6 +1346,33 @@ foreign python {
 
     @(link_name="_PyObject_CheckConsistency")
     _PyObject_CheckConsistency :: proc(op : ^PyObject, check_content : _c.int) -> _c.int ---;
+
+    @(link_name="_PyTrash_deposit_object")
+    _PyTrash_deposit_object :: proc(unamed0 : ^PyObject) ---;
+
+    @(link_name="_PyTrash_destroy_chain")
+    _PyTrash_destroy_chain :: proc() ---;
+
+    @(link_name="_PyTrash_thread_deposit_object")
+    _PyTrash_thread_deposit_object :: proc(unamed0 : ^PyObject) ---;
+
+    @(link_name="_PyTrash_thread_destroy_chain")
+    _PyTrash_thread_destroy_chain :: proc() ---;
+
+    @(link_name="_PyTrash_begin")
+    _PyTrash_begin :: proc(tstate : ^_ts, op : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyTrash_end")
+    _PyTrash_end :: proc(tstate : ^_ts) ---;
+
+    @(link_name="PyType_HasFeature")
+    PyType_HasFeature :: proc(type : ^PyTypeObject, feature : _c.ulong) -> _c.int ---;
+
+    @(link_name="_PyType_Check")
+    _PyType_Check :: proc(op : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyType_CheckExact")
+    _PyType_CheckExact :: proc(op : ^PyObject) -> _c.int ---;
 
     @(link_name="_PyLong_FromTime_t")
     _PyLong_FromTime_t :: proc(sec : _libc.time_t) -> ^PyObject ---;
@@ -1406,23 +1416,23 @@ foreign python {
     @(link_name="_PyTime_AsNanosecondsObject")
     _PyTime_AsNanosecondsObject :: proc(t : i64) -> ^PyObject ---;
 
-    // @(link_name="_PyTime_FromTimeval")
-    // _PyTime_FromTimeval :: proc(tp : ^i64, tv : ^timeval) -> _c.int ---;
+    @(link_name="_PyTime_FromTimeval")
+    _PyTime_FromTimeval :: proc(tp : ^i64, tv : ^timeval) -> _c.int ---;
 
-    // @(link_name="_PyTime_AsTimeval")
-    // _PyTime_AsTimeval :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
+    @(link_name="_PyTime_AsTimeval")
+    _PyTime_AsTimeval :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
 
-    // @(link_name="_PyTime_AsTimeval_noraise")
-    // _PyTime_AsTimeval_noraise :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
+    @(link_name="_PyTime_AsTimeval_noraise")
+    _PyTime_AsTimeval_noraise :: proc(t : i64, tv : ^timeval, round : _PyTime_round_t) -> _c.int ---;
 
     @(link_name="_PyTime_AsTimevalTime_t")
     _PyTime_AsTimevalTime_t :: proc(t : i64, secs : ^_libc.time_t, us : ^_c.int, round : _PyTime_round_t) -> _c.int ---;
 
-    // @(link_name="_PyTime_FromTimespec")
-    // _PyTime_FromTimespec :: proc(tp : ^i64, ts : ^timespec) -> _c.int ---;
+    @(link_name="_PyTime_FromTimespec")
+    _PyTime_FromTimespec :: proc(tp : ^i64, ts : ^_libc.timespec) -> _c.int ---;
 
-    // @(link_name="_PyTime_AsTimespec")
-    // _PyTime_AsTimespec :: proc(t : i64, ts : ^timespec) -> _c.int ---;
+    @(link_name="_PyTime_AsTimespec")
+    _PyTime_AsTimespec :: proc(t : i64, ts : ^_libc.timespec) -> _c.int ---;
 
     @(link_name="_PyTime_MulDiv")
     _PyTime_MulDiv :: proc(ticks : i64, mul : i64, div : i64) -> i64 ---;
@@ -1454,6 +1464,51 @@ foreign python {
     @(link_name="_PyTime_GetPerfCounterWithInfo")
     _PyTime_GetPerfCounterWithInfo :: proc(t : ^i64, info : ^_Py_clock_info_t) -> _c.int ---;
 
+    @(link_name="PyMem_Malloc")
+    PyMem_Malloc :: proc(size : _c.size_t) -> rawptr ---;
+
+    @(link_name="PyMem_Realloc")
+    PyMem_Realloc :: proc(ptr : rawptr, new_size : _c.size_t) -> rawptr ---;
+
+    @(link_name="PyMem_Free")
+    PyMem_Free :: proc(ptr : rawptr) ---;
+
+    @(link_name="PyMem_RawMalloc")
+    PyMem_RawMalloc :: proc(size : _c.size_t) -> rawptr ---;
+
+    @(link_name="PyMem_RawCalloc")
+    PyMem_RawCalloc :: proc(nelem : _c.size_t, elsize : _c.size_t) -> rawptr ---;
+
+    @(link_name="PyMem_RawRealloc")
+    PyMem_RawRealloc :: proc(ptr : rawptr, new_size : _c.size_t) -> rawptr ---;
+
+    @(link_name="PyMem_RawFree")
+    PyMem_RawFree :: proc(ptr : rawptr) ---;
+
+    @(link_name="_PyMem_GetCurrentAllocatorName")
+    _PyMem_GetCurrentAllocatorName :: proc() -> cstring ---;
+
+    @(link_name="PyMem_Calloc")
+    PyMem_Calloc :: proc(nelem : _c.size_t, elsize : _c.size_t) -> rawptr ---;
+
+    @(link_name="_PyMem_RawStrdup")
+    _PyMem_RawStrdup :: proc(str : cstring) -> cstring ---;
+
+    @(link_name="_PyMem_Strdup")
+    _PyMem_Strdup :: proc(str : cstring) -> cstring ---;
+
+    @(link_name="_PyMem_RawWcsdup")
+    _PyMem_RawWcsdup :: proc(str : ^_c.wchar_t) -> ^_c.wchar_t ---;
+
+    @(link_name="PyMem_GetAllocator")
+    PyMem_GetAllocator :: proc(domain : PyMemAllocatorDomain, allocator : ^PyMemAllocatorEx) ---;
+
+    @(link_name="PyMem_SetAllocator")
+    PyMem_SetAllocator :: proc(domain : PyMemAllocatorDomain, allocator : ^PyMemAllocatorEx) ---;
+
+    @(link_name="PyMem_SetupDebugHooks")
+    PyMem_SetupDebugHooks :: proc() ---;
+
     @(link_name="PyObject_Malloc")
     PyObject_Malloc :: proc(size : _c.size_t) -> rawptr ---;
 
@@ -1478,12 +1533,6 @@ foreign python {
     @(link_name="_PyObject_NewVar")
     _PyObject_NewVar :: proc(unamed0 : ^PyTypeObject, unamed1 : _c.ssize_t) -> ^PyVarObject ---;
 
-    @(link_name="_PyObject_INIT")
-    _PyObject_INIT :: proc(op : ^PyObject, typeobj : ^PyTypeObject) -> ^PyObject ---;
-
-    @(link_name="_PyObject_INIT_VAR")
-    _PyObject_INIT_VAR :: proc(op : ^PyVarObject, typeobj : ^PyTypeObject, size : _c.ssize_t) -> ^PyVarObject ---;
-
     @(link_name="PyGC_Collect")
     PyGC_Collect :: proc() -> _c.ssize_t ---;
 
@@ -1505,6 +1554,18 @@ foreign python {
     @(link_name="PyObject_GC_Del")
     PyObject_GC_Del :: proc(unamed0 : rawptr) ---;
 
+    @(link_name="PyObject_GC_IsTracked")
+    PyObject_GC_IsTracked :: proc(unamed0 : ^PyObject) -> _c.int ---;
+
+    @(link_name="PyObject_GC_IsFinalized")
+    PyObject_GC_IsFinalized :: proc(unamed0 : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyObject_INIT")
+    _PyObject_INIT :: proc(op : ^PyObject, typeobj : ^PyTypeObject) -> ^PyObject ---;
+
+    @(link_name="_PyObject_INIT_VAR")
+    _PyObject_INIT_VAR :: proc(op : ^PyVarObject, typeobj : ^PyTypeObject, size : _c.ssize_t) -> ^PyVarObject ---;
+
     @(link_name="_Py_GetAllocatedBlocks")
     _Py_GetAllocatedBlocks :: proc() -> _c.ssize_t ---;
 
@@ -1523,17 +1584,26 @@ foreign python {
     @(link_name="_PyGC_CollectIfEnabled")
     _PyGC_CollectIfEnabled :: proc() -> _c.ssize_t ---;
 
+    @(link_name="PyObject_IS_GC")
+    PyObject_IS_GC :: proc(obj : ^PyObject) -> _c.int ---;
+
     @(link_name="_PyObject_GC_Malloc")
     _PyObject_GC_Malloc :: proc(size : _c.size_t) -> ^PyObject ---;
 
     @(link_name="_PyObject_GC_Calloc")
     _PyObject_GC_Calloc :: proc(size : _c.size_t) -> ^PyObject ---;
 
+    @(link_name="PyObject_GET_WEAKREFS_LISTPTR")
+    PyObject_GET_WEAKREFS_LISTPTR :: proc(op : ^PyObject) -> ^^PyObject ---;
+
     @(link_name="_Py_HashDouble")
     _Py_HashDouble :: proc(unamed0 : _c.double) -> _c.ssize_t ---;
 
     @(link_name="_Py_HashPointer")
     _Py_HashPointer :: proc(unamed0 : rawptr) -> _c.ssize_t ---;
+
+    @(link_name="_Py_HashPointerRaw")
+    _Py_HashPointerRaw :: proc(unamed0 : rawptr) -> _c.ssize_t ---;
 
     @(link_name="_Py_HashBytes")
     _Py_HashBytes :: proc(unamed0 : rawptr, unamed1 : _c.ssize_t) -> _c.ssize_t ---;
@@ -1589,6 +1659,12 @@ foreign python {
     @(link_name="PyBytes_ConcatAndDel")
     PyBytes_ConcatAndDel :: proc(unamed0 : ^^PyObject, unamed1 : ^PyObject) ---;
 
+    @(link_name="PyBytes_DecodeEscape")
+    PyBytes_DecodeEscape :: proc(unamed0 : cstring, unamed1 : _c.ssize_t, unamed2 : cstring, unamed3 : _c.ssize_t, unamed4 : cstring) -> ^PyObject ---;
+
+    @(link_name="PyBytes_AsStringAndSize")
+    PyBytes_AsStringAndSize :: proc(obj : ^PyObject, s : ^cstring, len : ^_c.ssize_t) -> _c.int ---;
+
     @(link_name="_PyBytes_Resize")
     _PyBytes_Resize :: proc(unamed0 : ^^PyObject, unamed1 : _c.ssize_t) -> _c.int ---;
 
@@ -1598,23 +1674,11 @@ foreign python {
     @(link_name="_PyBytes_FromHex")
     _PyBytes_FromHex :: proc(string : ^PyObject, use_bytearray : _c.int) -> ^PyObject ---;
 
-    @(link_name="PyBytes_DecodeEscape")
-    PyBytes_DecodeEscape :: proc(unamed0 : cstring, unamed1 : _c.ssize_t, unamed2 : cstring, unamed3 : _c.ssize_t, unamed4 : cstring) -> ^PyObject ---;
-
     @(link_name="_PyBytes_DecodeEscape")
-    _PyBytes_DecodeEscape :: proc(unamed0 : cstring, unamed1 : _c.ssize_t, unamed2 : cstring, unamed3 : _c.ssize_t, unamed4 : cstring, unamed5 : ^cstring) -> ^PyObject ---;
+    _PyBytes_DecodeEscape :: proc(unamed0 : cstring, unamed1 : _c.ssize_t, unamed2 : cstring, unamed3 : ^cstring) -> ^PyObject ---;
 
     @(link_name="_PyBytes_Join")
     _PyBytes_Join :: proc(sep : ^PyObject, x : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyBytes_AsStringAndSize")
-    PyBytes_AsStringAndSize :: proc(obj : ^PyObject, s : ^cstring, len : ^_c.ssize_t) -> _c.int ---;
-
-    @(link_name="_PyBytes_InsertThousandsGroupingLocale")
-    _PyBytes_InsertThousandsGroupingLocale :: proc(buffer : cstring, n_buffer : _c.ssize_t, digits : cstring, n_digits : _c.ssize_t, min_width : _c.ssize_t) -> _c.ssize_t ---;
-
-    @(link_name="_PyBytes_InsertThousandsGrouping")
-    _PyBytes_InsertThousandsGrouping :: proc(buffer : cstring, n_buffer : _c.ssize_t, digits : cstring, n_digits : _c.ssize_t, min_width : _c.ssize_t, grouping : cstring, thousands_sep : cstring) -> _c.ssize_t ---;
 
     @(link_name="_PyBytesWriter_Init")
     _PyBytesWriter_Init :: proc(writer : ^_PyBytesWriter) ---;
@@ -1699,9 +1763,6 @@ foreign python {
 
     @(link_name="PyUnicode_FromOrdinal")
     PyUnicode_FromOrdinal :: proc(ordinal : _c.int) -> ^PyObject ---;
-
-    @(link_name="PyUnicode_ClearFreeList")
-    PyUnicode_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="PyUnicode_GetDefaultEncoding")
     PyUnicode_GetDefaultEncoding :: proc() -> cstring ---;
@@ -1877,8 +1938,17 @@ foreign python {
     @(link_name="PyUnicode_IsIdentifier")
     PyUnicode_IsIdentifier :: proc(s : ^PyObject) -> _c.int ---;
 
+    @(link_name="Py_UNICODE_COPY")
+    Py_UNICODE_COPY :: proc(target : ^Py_UNICODE, source : ^Py_UNICODE, length : _c.ssize_t) ---;
+
+    @(link_name="Py_UNICODE_FILL")
+    Py_UNICODE_FILL :: proc(target : ^Py_UNICODE, value : Py_UNICODE, length : _c.ssize_t) ---;
+
     @(link_name="_PyUnicode_CheckConsistency")
     _PyUnicode_CheckConsistency :: proc(op : ^PyObject, check_content : _c.int) -> _c.int ---;
+
+    @(link_name="_PyUnicode_get_wstr_length")
+    _PyUnicode_get_wstr_length :: proc(op : ^PyObject) -> _c.ssize_t ---;
 
     @(link_name="PyUnicode_New")
     PyUnicode_New :: proc(size : _c.ssize_t, maxchar : u32) -> ^PyObject ---;
@@ -1958,9 +2028,6 @@ foreign python {
     @(link_name="_PyUnicode_FormatAdvancedWriter")
     _PyUnicode_FormatAdvancedWriter :: proc(writer : ^_PyUnicodeWriter, obj : ^PyObject, format_spec : ^PyObject, start : _c.ssize_t, end : _c.ssize_t) -> _c.int ---;
 
-    @(link_name="_PyUnicode_AsKind")
-    _PyUnicode_AsKind :: proc(s : ^PyObject, kind : _c.uint) -> rawptr ---;
-
     @(link_name="PyUnicode_AsUTF8AndSize")
     PyUnicode_AsUTF8AndSize :: proc(unicode : ^PyObject, size : ^_c.ssize_t) -> cstring ---;
 
@@ -1994,14 +2061,20 @@ foreign python {
     @(link_name="_PyUnicode_EncodeUTF16")
     _PyUnicode_EncodeUTF16 :: proc(unicode : ^PyObject, errors : cstring, byteorder : _c.int) -> ^PyObject ---;
 
-    @(link_name="_PyUnicode_DecodeUnicodeEscape")
-    _PyUnicode_DecodeUnicodeEscape :: proc(string : cstring, length : _c.ssize_t, errors : cstring, first_invalid_escape : ^cstring) -> ^PyObject ---;
+    @(link_name="_PyUnicode_DecodeUnicodeEscapeStateful")
+    _PyUnicode_DecodeUnicodeEscapeStateful :: proc(string : cstring, length : _c.ssize_t, errors : cstring, consumed : ^_c.ssize_t) -> ^PyObject ---;
+
+    @(link_name="_PyUnicode_DecodeUnicodeEscapeInternal")
+    _PyUnicode_DecodeUnicodeEscapeInternal :: proc(string : cstring, length : _c.ssize_t, errors : cstring, consumed : ^_c.ssize_t, first_invalid_escape : ^cstring) -> ^PyObject ---;
 
     @(link_name="PyUnicode_EncodeUnicodeEscape")
     PyUnicode_EncodeUnicodeEscape :: proc(data : ^Py_UNICODE, length : _c.ssize_t) -> ^PyObject ---;
 
     @(link_name="PyUnicode_EncodeRawUnicodeEscape")
     PyUnicode_EncodeRawUnicodeEscape :: proc(data : ^Py_UNICODE, length : _c.ssize_t) -> ^PyObject ---;
+
+    @(link_name="_PyUnicode_DecodeRawUnicodeEscapeStateful")
+    _PyUnicode_DecodeRawUnicodeEscapeStateful :: proc(string : cstring, length : _c.ssize_t, errors : cstring, consumed : ^_c.ssize_t) -> ^PyObject ---;
 
     @(link_name="_PyUnicode_AsLatin1String")
     _PyUnicode_AsLatin1String :: proc(unicode : ^PyObject, errors : cstring) -> ^PyObject ---;
@@ -2153,11 +2226,11 @@ foreign python {
     @(link_name="_PyUnicode_FromId")
     _PyUnicode_FromId :: proc(unamed0 : ^_Py_Identifier) -> ^PyObject ---;
 
-    @(link_name="_PyUnicode_ClearStaticStrings")
-    _PyUnicode_ClearStaticStrings :: proc() ---;
-
     @(link_name="_PyUnicode_EQ")
     _PyUnicode_EQ :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyUnicode_ScanIdentifier")
+    _PyUnicode_ScanIdentifier :: proc(unamed0 : ^PyObject) -> _c.ssize_t ---;
 
     @(link_name="PyLong_FromLong")
     PyLong_FromLong :: proc(unamed0 : _c.long) -> ^PyObject ---;
@@ -2339,15 +2412,6 @@ foreign python {
     @(link_name="_PyFloat_Pack8")
     _PyFloat_Pack8 :: proc(x : _c.double, p : ^_c.uchar, le : _c.int) -> _c.int ---;
 
-    @(link_name="_PyFloat_Repr")
-    _PyFloat_Repr :: proc(x : _c.double, p : cstring, len : _c.size_t) -> _c.int ---;
-
-    @(link_name="_PyFloat_Digits")
-    _PyFloat_Digits :: proc(buf : cstring, v : _c.double, signum : ^_c.int) -> _c.int ---;
-
-    @(link_name="_PyFloat_DigitsInit")
-    _PyFloat_DigitsInit :: proc() ---;
-
     @(link_name="_PyFloat_Unpack2")
     _PyFloat_Unpack2 :: proc(p : ^_c.uchar, le : _c.int) -> _c.double ---;
 
@@ -2356,9 +2420,6 @@ foreign python {
 
     @(link_name="_PyFloat_Unpack8")
     _PyFloat_Unpack8 :: proc(p : ^_c.uchar, le : _c.int) -> _c.double ---;
-
-    @(link_name="PyFloat_ClearFreeList")
-    PyFloat_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="_PyFloat_DebugMallocStats")
     _PyFloat_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
@@ -2435,9 +2496,6 @@ foreign python {
     @(link_name="PyTuple_Pack")
     PyTuple_Pack :: proc(unamed0 : _c.ssize_t) -> ^PyObject ---;
 
-    @(link_name="PyTuple_ClearFreeList")
-    PyTuple_ClearFreeList :: proc() -> _c.int ---;
-
     @(link_name="_PyTuple_Resize")
     _PyTuple_Resize :: proc(unamed0 : ^^PyObject, unamed1 : _c.ssize_t) -> _c.int ---;
 
@@ -2482,9 +2540,6 @@ foreign python {
 
     @(link_name="_PyList_Extend")
     _PyList_Extend :: proc(unamed0 : ^PyListObject, unamed1 : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyList_ClearFreeList")
-    PyList_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="_PyList_DebugMallocStats")
     _PyList_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
@@ -2603,9 +2658,6 @@ foreign python {
     @(link_name="_PyDict_FromKeys")
     _PyDict_FromKeys :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="PyDict_ClearFreeList")
-    PyDict_ClearFreeList :: proc() -> _c.int ---;
-
     @(link_name="_PyDict_MergeEx")
     _PyDict_MergeEx :: proc(mp : ^PyObject, other : ^PyObject, override : _c.int) -> _c.int ---;
 
@@ -2648,9 +2700,6 @@ foreign python {
     @(link_name="_PySet_Update")
     _PySet_Update :: proc(set : ^PyObject, iterable : ^PyObject) -> _c.int ---;
 
-    @(link_name="PySet_ClearFreeList")
-    PySet_ClearFreeList :: proc() -> _c.int ---;
-
     @(link_name="PySet_New")
     PySet_New :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
 
@@ -2687,26 +2736,11 @@ foreign python {
     @(link_name="PyCFunction_Call")
     PyCFunction_Call :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyCFunction_FastCallDict")
-    _PyCFunction_FastCallDict :: proc(func : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, kwargs : ^PyObject) -> ^PyObject ---;
-
     @(link_name="PyCFunction_NewEx")
     PyCFunction_NewEx :: proc(unamed0 : ^PyMethodDef, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyMethodDef_RawFastCallDict")
-    _PyMethodDef_RawFastCallDict :: proc(method : ^PyMethodDef, self : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, kwargs : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="_PyMethodDef_RawFastCallKeywords")
-    _PyMethodDef_RawFastCallKeywords :: proc(method : ^PyMethodDef, self : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, kwnames : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyCFunction_ClearFreeList")
-    PyCFunction_ClearFreeList :: proc() -> _c.int ---;
-
-    @(link_name="_PyCFunction_DebugMallocStats")
-    _PyCFunction_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
-
-    @(link_name="_PyMethod_DebugMallocStats")
-    _PyMethod_DebugMallocStats :: proc(out : ^_libc.FILE) ---;
+    @(link_name="PyCMethod_New")
+    PyCMethod_New :: proc(unamed0 : ^PyMethodDef, unamed1 : ^PyObject, unamed2 : ^PyObject, unamed3 : ^PyTypeObject) -> ^PyObject ---;
 
     @(link_name="PyModule_NewObject")
     PyModule_NewObject :: proc(name : ^PyObject) -> ^PyObject ---;
@@ -2786,9 +2820,6 @@ foreign python {
     @(link_name="PyFunction_SetAnnotations")
     PyFunction_SetAnnotations :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> _c.int ---;
 
-    @(link_name="_PyFunction_FastCallDict")
-    _PyFunction_FastCallDict :: proc(func : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, kwargs : ^PyObject) -> ^PyObject ---;
-
     @(link_name="_PyFunction_Vectorcall")
     _PyFunction_Vectorcall :: proc(func : ^PyObject, stack : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
 
@@ -2806,9 +2837,6 @@ foreign python {
 
     @(link_name="PyMethod_Self")
     PyMethod_Self :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyMethod_ClearFreeList")
-    PyMethod_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="PyInstanceMethod_New")
     PyInstanceMethod_New :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
@@ -2879,8 +2907,41 @@ foreign python {
     @(link_name="PyCapsule_Import")
     PyCapsule_Import :: proc(name : cstring, no_block : _c.int) -> rawptr ---;
 
+    @(link_name="PyCode_New")
+    PyCode_New :: proc(unamed0 : _c.int, unamed1 : _c.int, unamed2 : _c.int, unamed3 : _c.int, unamed4 : _c.int, unamed5 : ^PyObject, unamed6 : ^PyObject, unamed7 : ^PyObject, unamed8 : ^PyObject, unamed9 : ^PyObject, unamed10 : ^PyObject, unamed11 : ^PyObject, unamed12 : ^PyObject, unamed13 : _c.int, unamed14 : ^PyObject) -> ^PyCodeObject ---;
+
+    @(link_name="PyCode_NewWithPosOnlyArgs")
+    PyCode_NewWithPosOnlyArgs :: proc(unamed0 : _c.int, unamed1 : _c.int, unamed2 : _c.int, unamed3 : _c.int, unamed4 : _c.int, unamed5 : _c.int, unamed6 : ^PyObject, unamed7 : ^PyObject, unamed8 : ^PyObject, unamed9 : ^PyObject, unamed10 : ^PyObject, unamed11 : ^PyObject, unamed12 : ^PyObject, unamed13 : ^PyObject, unamed14 : _c.int, unamed15 : ^PyObject) -> ^PyCodeObject ---;
+
+    @(link_name="PyCode_NewEmpty")
+    PyCode_NewEmpty :: proc(filename : cstring, funcname : cstring, firstlineno : _c.int) -> ^PyCodeObject ---;
+
+    @(link_name="PyCode_Addr2Line")
+    PyCode_Addr2Line :: proc(unamed0 : ^PyCodeObject, unamed1 : _c.int) -> _c.int ---;
+
+    @(link_name="_PyCode_CheckLineNumber")
+    _PyCode_CheckLineNumber :: proc(co : ^PyCodeObject, lasti : _c.int, bounds : ^PyAddrPair) -> _c.int ---;
+
+    @(link_name="_PyCode_ConstantKey")
+    _PyCode_ConstantKey :: proc(obj : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="PyCode_Optimize")
+    PyCode_Optimize :: proc(code : ^PyObject, consts : ^PyObject, names : ^PyObject, lnotab : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="_PyCode_GetExtra")
+    _PyCode_GetExtra :: proc(code : ^PyObject, index : _c.ssize_t, extra : ^rawptr) -> _c.int ---;
+
+    @(link_name="_PyCode_SetExtra")
+    _PyCode_SetExtra :: proc(code : ^PyObject, index : _c.ssize_t, extra : rawptr) -> _c.int ---;
+
+    @(link_name="PyFrame_GetLineNumber")
+    PyFrame_GetLineNumber :: proc(unamed0 : ^PyFrameObject) -> _c.int ---;
+
+    @(link_name="PyFrame_GetCode")
+    PyFrame_GetCode :: proc(frame : ^PyFrameObject) -> ^PyCodeObject ---;
+
     @(link_name="PyTraceBack_Here")
-    PyTraceBack_Here :: proc(unamed0 : ^_frame) -> _c.int ---;
+    PyTraceBack_Here :: proc(unamed0 : ^PyFrameObject) -> _c.int ---;
 
     @(link_name="PyTraceBack_Print")
     PyTraceBack_Print :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> _c.int ---;
@@ -2927,84 +2988,6 @@ foreign python {
     @(link_name="PyCallIter_New")
     PyCallIter_New :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="PyThread_init_thread")
-    PyThread_init_thread :: proc() ---;
-
-    @(link_name="PyThread_start_new_thread")
-    PyThread_start_new_thread :: proc(unamed0 : #type proc(unamed0 : rawptr), unamed1 : rawptr) -> _c.ulong ---;
-
-    @(link_name="PyThread_exit_thread")
-    PyThread_exit_thread :: proc() ---;
-
-    @(link_name="PyThread_get_thread_ident")
-    PyThread_get_thread_ident :: proc() -> _c.ulong ---;
-
-    @(link_name="PyThread_get_thread_native_id")
-    PyThread_get_thread_native_id :: proc() -> _c.ulong ---;
-
-    @(link_name="PyThread_allocate_lock")
-    PyThread_allocate_lock :: proc() -> PyThread_type_lock ---;
-
-    @(link_name="PyThread_free_lock")
-    PyThread_free_lock :: proc(unamed0 : PyThread_type_lock) ---;
-
-    @(link_name="PyThread_acquire_lock")
-    PyThread_acquire_lock :: proc(unamed0 : PyThread_type_lock, unamed1 : _c.int) -> _c.int ---;
-
-    @(link_name="PyThread_acquire_lock_timed")
-    PyThread_acquire_lock_timed :: proc(unamed0 : PyThread_type_lock, microseconds : _c.longlong, intr_flag : _c.int) -> PyLockStatus ---;
-
-    @(link_name="PyThread_release_lock")
-    PyThread_release_lock :: proc(unamed0 : PyThread_type_lock) ---;
-
-    @(link_name="PyThread_get_stacksize")
-    PyThread_get_stacksize :: proc() -> _c.size_t ---;
-
-    @(link_name="PyThread_set_stacksize")
-    PyThread_set_stacksize :: proc(unamed0 : _c.size_t) -> _c.int ---;
-
-    @(link_name="PyThread_GetInfo")
-    PyThread_GetInfo :: proc() -> ^PyObject ---;
-
-    @(link_name="PyThread_create_key")
-    PyThread_create_key :: proc() -> _c.int ---;
-
-    @(link_name="PyThread_delete_key")
-    PyThread_delete_key :: proc(key : _c.int) ---;
-
-    @(link_name="PyThread_set_key_value")
-    PyThread_set_key_value :: proc(key : _c.int, value : rawptr) -> _c.int ---;
-
-    @(link_name="PyThread_get_key_value")
-    PyThread_get_key_value :: proc(key : _c.int) -> rawptr ---;
-
-    @(link_name="PyThread_delete_key_value")
-    PyThread_delete_key_value :: proc(key : _c.int) ---;
-
-    @(link_name="PyThread_ReInitTLS")
-    PyThread_ReInitTLS :: proc() ---;
-
-    @(link_name="PyThread_tss_alloc")
-    PyThread_tss_alloc :: proc() -> ^Py_tss_t ---;
-
-    @(link_name="PyThread_tss_free")
-    PyThread_tss_free :: proc(key : ^Py_tss_t) ---;
-
-    @(link_name="PyThread_tss_is_created")
-    PyThread_tss_is_created :: proc(key : ^Py_tss_t) -> _c.int ---;
-
-    @(link_name="PyThread_tss_create")
-    PyThread_tss_create :: proc(key : ^Py_tss_t) -> _c.int ---;
-
-    @(link_name="PyThread_tss_delete")
-    PyThread_tss_delete :: proc(key : ^Py_tss_t) ---;
-
-    @(link_name="PyThread_tss_set")
-    PyThread_tss_set :: proc(key : ^Py_tss_t, value : rawptr) -> _c.int ---;
-
-    @(link_name="PyThread_tss_get")
-    PyThread_tss_get :: proc(key : ^Py_tss_t) -> rawptr ---;
-
     @(link_name="PyInterpreterState_New")
     PyInterpreterState_New :: proc() -> ^PyInterpreterState ---;
 
@@ -3013,6 +2996,9 @@ foreign python {
 
     @(link_name="PyInterpreterState_Delete")
     PyInterpreterState_Delete :: proc(unamed0 : ^PyInterpreterState) ---;
+
+    @(link_name="PyInterpreterState_Get")
+    PyInterpreterState_Get :: proc() -> ^PyInterpreterState ---;
 
     @(link_name="PyInterpreterState_GetDict")
     PyInterpreterState_GetDict :: proc(unamed0 : ^PyInterpreterState) -> ^PyObject ---;
@@ -3038,9 +3024,6 @@ foreign python {
     @(link_name="PyThreadState_Delete")
     PyThreadState_Delete :: proc(unamed0 : ^PyThreadState) ---;
 
-    @(link_name="PyThreadState_DeleteCurrent")
-    PyThreadState_DeleteCurrent :: proc() ---;
-
     @(link_name="PyThreadState_Get")
     PyThreadState_Get :: proc() -> ^PyThreadState ---;
 
@@ -3052,6 +3035,15 @@ foreign python {
 
     @(link_name="PyThreadState_SetAsyncExc")
     PyThreadState_SetAsyncExc :: proc(unamed0 : _c.ulong, unamed1 : ^PyObject) -> _c.int ---;
+
+    @(link_name="PyThreadState_GetInterpreter")
+    PyThreadState_GetInterpreter :: proc(tstate : ^PyThreadState) -> ^PyInterpreterState ---;
+
+    @(link_name="PyThreadState_GetFrame")
+    PyThreadState_GetFrame :: proc(tstate : ^PyThreadState) -> ^PyFrameObject ---;
+
+    @(link_name="PyThreadState_GetID")
+    PyThreadState_GetID :: proc(tstate : ^PyThreadState) -> u64 ---;
 
     @(link_name="PyGILState_Ensure")
     PyGILState_Ensure :: proc() -> PyGILState_STATE ---;
@@ -3122,6 +3114,9 @@ foreign python {
     @(link_name="PyConfig_SetWideStringList")
     PyConfig_SetWideStringList :: proc(config : ^PyConfig, list : ^PyWideStringList, length : _c.ssize_t, items : ^^_c.wchar_t) -> PyStatus ---;
 
+    @(link_name="Py_GetArgcArgv")
+    Py_GetArgcArgv :: proc(argc : ^_c.int, argv : ^^^_c.wchar_t) ---;
+
     @(link_name="_PyInterpreterState_RequiresIDRef")
     _PyInterpreterState_RequiresIDRef :: proc(unamed0 : ^PyInterpreterState) -> _c.int ---;
 
@@ -3131,20 +3126,14 @@ foreign python {
     @(link_name="_PyInterpreterState_GetMainModule")
     _PyInterpreterState_GetMainModule :: proc(unamed0 : ^PyInterpreterState) -> ^PyObject ---;
 
-    @(link_name="_PyInterpreterState_Get")
-    _PyInterpreterState_Get :: proc() -> ^PyInterpreterState ---;
-
-    @(link_name="_PyState_AddModule")
-    _PyState_AddModule :: proc(unamed0 : ^PyObject, unamed1 : ^PyModuleDef) -> _c.int ---;
-
-    @(link_name="_PyState_ClearModules")
-    _PyState_ClearModules :: proc() ---;
-
     @(link_name="_PyThreadState_Prealloc")
     _PyThreadState_Prealloc :: proc(unamed0 : ^PyInterpreterState) -> ^PyThreadState ---;
 
     @(link_name="_PyThreadState_UncheckedGet")
     _PyThreadState_UncheckedGet :: proc() -> ^PyThreadState ---;
+
+    @(link_name="_PyThreadState_GetDict")
+    _PyThreadState_GetDict :: proc(tstate : ^PyThreadState) -> ^PyObject ---;
 
     @(link_name="PyGILState_Check")
     PyGILState_Check :: proc() -> _c.int ---;
@@ -3170,6 +3159,21 @@ foreign python {
     @(link_name="PyThreadState_Next")
     PyThreadState_Next :: proc(unamed0 : ^PyThreadState) -> ^PyThreadState ---;
 
+    @(link_name="PyThreadState_DeleteCurrent")
+    PyThreadState_DeleteCurrent :: proc() ---;
+
+    @(link_name="_PyInterpreterState_GetEvalFrameFunc")
+    _PyInterpreterState_GetEvalFrameFunc :: proc(interp : ^PyInterpreterState) -> _PyFrameEvalFunction ---;
+
+    @(link_name="_PyInterpreterState_SetEvalFrameFunc")
+    _PyInterpreterState_SetEvalFrameFunc :: proc(interp : ^PyInterpreterState, eval_frame : _PyFrameEvalFunction) ---;
+
+    @(link_name="_PyInterpreterState_GetConfig")
+    _PyInterpreterState_GetConfig :: proc(interp : ^PyInterpreterState) -> ^PyConfig ---;
+
+    @(link_name="_Py_GetConfig")
+    _Py_GetConfig :: proc() -> ^PyConfig ---;
+
     @(link_name="_PyObject_GetCrossInterpreterData")
     _PyObject_GetCrossInterpreterData :: proc(unamed0 : ^PyObject, unamed1 : ^_PyCrossInterpreterData) -> _c.int ---;
 
@@ -3189,13 +3193,10 @@ foreign python {
     _PyCrossInterpreterData_Lookup :: proc(unamed0 : ^PyObject) -> crossinterpdatafunc ---;
 
     @(link_name="PyGen_New")
-    PyGen_New :: proc(unamed0 : ^_frame) -> ^PyObject ---;
+    PyGen_New :: proc(unamed0 : ^PyFrameObject) -> ^PyObject ---;
 
     @(link_name="PyGen_NewWithQualName")
-    PyGen_NewWithQualName :: proc(unamed0 : ^_frame, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyGen_NeedsFinalizing")
-    PyGen_NeedsFinalizing :: proc(unamed0 : ^PyGenObject) -> _c.int ---;
+    PyGen_NewWithQualName :: proc(unamed0 : ^PyFrameObject, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyGen_SetStopIterationValue")
     _PyGen_SetStopIterationValue :: proc(unamed0 : ^PyObject) -> _c.int ---;
@@ -3216,16 +3217,13 @@ foreign python {
     _PyCoro_GetAwaitableIter :: proc(o : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyCoro_New")
-    PyCoro_New :: proc(unamed0 : ^_frame, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
+    PyCoro_New :: proc(unamed0 : ^PyFrameObject, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyAsyncGen_New")
-    PyAsyncGen_New :: proc(unamed0 : ^_frame, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
+    PyAsyncGen_New :: proc(unamed0 : ^PyFrameObject, name : ^PyObject, qualname : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyAsyncGenValueWrapperNew")
     _PyAsyncGenValueWrapperNew :: proc(unamed0 : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyAsyncGen_ClearFreeLists")
-    PyAsyncGen_ClearFreeLists :: proc() -> _c.int ---;
 
     @(link_name="PyDescr_NewMethod")
     PyDescr_NewMethod :: proc(unamed0 : ^PyTypeObject, unamed1 : ^PyMethodDef) -> ^PyObject ---;
@@ -3247,6 +3245,9 @@ foreign python {
 
     @(link_name="PyWrapper_New")
     PyWrapper_New :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="Py_GenericAlias")
+    Py_GenericAlias :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyWarnings_Init")
     _PyWarnings_Init :: proc() -> ^PyObject ---;
@@ -3596,6 +3597,9 @@ foreign python {
     @(link_name="_PyErr_GetTopmostException")
     _PyErr_GetTopmostException :: proc(tstate : ^PyThreadState) -> ^_PyErr_StackItem ---;
 
+    @(link_name="_PyErr_GetExcInfo")
+    _PyErr_GetExcInfo :: proc(unamed0 : ^PyThreadState, unamed1 : ^^PyObject, unamed2 : ^^PyObject, unamed3 : ^^PyObject) ---;
+
     @(link_name="_PyErr_ChainExceptions")
     _PyErr_ChainExceptions :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) ---;
 
@@ -3629,6 +3633,93 @@ foreign python {
     @(link_name="_PyErr_WriteUnraisableMsg")
     _PyErr_WriteUnraisableMsg :: proc(err_msg : cstring, obj : ^PyObject) ---;
 
+    @(link_name="_Py_FatalErrorFunc")
+    _Py_FatalErrorFunc :: proc(func : cstring, message : cstring) ---;
+
+    @(link_name="_Py_FatalErrorFormat")
+    _Py_FatalErrorFormat :: proc(func : cstring, format : cstring) ---;
+
+    @(link_name="PyThread_init_thread")
+    PyThread_init_thread :: proc() ---;
+
+    @(link_name="PyThread_start_new_thread")
+    PyThread_start_new_thread :: proc(unamed0 : #type proc(unamed0 : rawptr), unamed1 : rawptr) -> _c.ulong ---;
+
+    @(link_name="PyThread_exit_thread")
+    PyThread_exit_thread :: proc() ---;
+
+    @(link_name="PyThread_get_thread_ident")
+    PyThread_get_thread_ident :: proc() -> _c.ulong ---;
+
+    @(link_name="PyThread_get_thread_native_id")
+    PyThread_get_thread_native_id :: proc() -> _c.ulong ---;
+
+    @(link_name="PyThread_allocate_lock")
+    PyThread_allocate_lock :: proc() -> PyThread_type_lock ---;
+
+    @(link_name="PyThread_free_lock")
+    PyThread_free_lock :: proc(unamed0 : PyThread_type_lock) ---;
+
+    @(link_name="PyThread_acquire_lock")
+    PyThread_acquire_lock :: proc(unamed0 : PyThread_type_lock, unamed1 : _c.int) -> _c.int ---;
+
+    @(link_name="_PyThread_at_fork_reinit")
+    _PyThread_at_fork_reinit :: proc(lock : ^PyThread_type_lock) -> _c.int ---;
+
+    @(link_name="PyThread_acquire_lock_timed")
+    PyThread_acquire_lock_timed :: proc(unamed0 : PyThread_type_lock, microseconds : _c.longlong, intr_flag : _c.int) -> PyLockStatus ---;
+
+    @(link_name="PyThread_release_lock")
+    PyThread_release_lock :: proc(unamed0 : PyThread_type_lock) ---;
+
+    @(link_name="PyThread_get_stacksize")
+    PyThread_get_stacksize :: proc() -> _c.size_t ---;
+
+    @(link_name="PyThread_set_stacksize")
+    PyThread_set_stacksize :: proc(unamed0 : _c.size_t) -> _c.int ---;
+
+    @(link_name="PyThread_GetInfo")
+    PyThread_GetInfo :: proc() -> ^PyObject ---;
+
+    @(link_name="PyThread_create_key")
+    PyThread_create_key :: proc() -> _c.int ---;
+
+    @(link_name="PyThread_delete_key")
+    PyThread_delete_key :: proc(key : _c.int) ---;
+
+    @(link_name="PyThread_set_key_value")
+    PyThread_set_key_value :: proc(key : _c.int, value : rawptr) -> _c.int ---;
+
+    @(link_name="PyThread_get_key_value")
+    PyThread_get_key_value :: proc(key : _c.int) -> rawptr ---;
+
+    @(link_name="PyThread_delete_key_value")
+    PyThread_delete_key_value :: proc(key : _c.int) ---;
+
+    @(link_name="PyThread_ReInitTLS")
+    PyThread_ReInitTLS :: proc() ---;
+
+    @(link_name="PyThread_tss_alloc")
+    PyThread_tss_alloc :: proc() -> ^Py_tss_t ---;
+
+    @(link_name="PyThread_tss_free")
+    PyThread_tss_free :: proc(key : ^Py_tss_t) ---;
+
+    @(link_name="PyThread_tss_is_created")
+    PyThread_tss_is_created :: proc(key : ^Py_tss_t) -> _c.int ---;
+
+    @(link_name="PyThread_tss_create")
+    PyThread_tss_create :: proc(key : ^Py_tss_t) -> _c.int ---;
+
+    @(link_name="PyThread_tss_delete")
+    PyThread_tss_delete :: proc(key : ^Py_tss_t) ---;
+
+    @(link_name="PyThread_tss_set")
+    PyThread_tss_set :: proc(key : ^Py_tss_t, value : rawptr) -> _c.int ---;
+
+    @(link_name="PyThread_tss_get")
+    PyThread_tss_get :: proc(key : ^Py_tss_t) -> rawptr ---;
+
     @(link_name="PyContext_New")
     PyContext_New :: proc() -> ^PyObject ---;
 
@@ -3658,9 +3749,6 @@ foreign python {
 
     @(link_name="_PyContext_NewHamtForTests")
     _PyContext_NewHamtForTests :: proc() -> ^PyObject ---;
-
-    @(link_name="PyContext_ClearFreeList")
-    PyContext_ClearFreeList :: proc() -> _c.int ---;
 
     @(link_name="PyArena_New")
     PyArena_New :: proc() -> ^PyArena ---;
@@ -3713,6 +3801,9 @@ foreign python {
     @(link_name="_PyArg_NoKeywords")
     _PyArg_NoKeywords :: proc(funcname : cstring, kwargs : ^PyObject) -> _c.int ---;
 
+    @(link_name="_PyArg_NoKwnames")
+    _PyArg_NoKwnames :: proc(funcname : cstring, kwnames : ^PyObject) -> _c.int ---;
+
     @(link_name="_PyArg_NoPositional")
     _PyArg_NoPositional :: proc(funcname : cstring, args : ^PyObject) -> _c.int ---;
 
@@ -3755,6 +3846,9 @@ foreign python {
     @(link_name="PyModule_AddStringConstant")
     PyModule_AddStringConstant :: proc(unamed0 : ^PyObject, unamed1 : cstring, unamed2 : cstring) -> _c.int ---;
 
+    @(link_name="PyModule_AddType")
+    PyModule_AddType :: proc(module : ^PyObject, type : ^PyTypeObject) -> _c.int ---;
+
     @(link_name="PyModule_SetDocString")
     PyModule_SetDocString :: proc(unamed0 : ^PyObject, unamed1 : cstring) -> _c.int ---;
 
@@ -3772,33 +3866,6 @@ foreign python {
 
     @(link_name="PyModule_FromDefAndSpec2")
     PyModule_FromDefAndSpec2 :: proc(def : ^PyModuleDef, spec : ^PyObject, module_api_version : _c.int) -> ^PyObject ---;
-
-    @(link_name="PyCode_New")
-    PyCode_New :: proc(unamed0 : _c.int, unamed1 : _c.int, unamed2 : _c.int, unamed3 : _c.int, unamed4 : _c.int, unamed5 : ^PyObject, unamed6 : ^PyObject, unamed7 : ^PyObject, unamed8 : ^PyObject, unamed9 : ^PyObject, unamed10 : ^PyObject, unamed11 : ^PyObject, unamed12 : ^PyObject, unamed13 : _c.int, unamed14 : ^PyObject) -> ^PyCodeObject ---;
-
-    @(link_name="PyCode_NewWithPosOnlyArgs")
-    PyCode_NewWithPosOnlyArgs :: proc(unamed0 : _c.int, unamed1 : _c.int, unamed2 : _c.int, unamed3 : _c.int, unamed4 : _c.int, unamed5 : _c.int, unamed6 : ^PyObject, unamed7 : ^PyObject, unamed8 : ^PyObject, unamed9 : ^PyObject, unamed10 : ^PyObject, unamed11 : ^PyObject, unamed12 : ^PyObject, unamed13 : ^PyObject, unamed14 : _c.int, unamed15 : ^PyObject) -> ^PyCodeObject ---;
-
-    @(link_name="PyCode_NewEmpty")
-    PyCode_NewEmpty :: proc(filename : cstring, funcname : cstring, firstlineno : _c.int) -> ^PyCodeObject ---;
-
-    @(link_name="PyCode_Addr2Line")
-    PyCode_Addr2Line :: proc(unamed0 : ^PyCodeObject, unamed1 : _c.int) -> _c.int ---;
-
-    @(link_name="_PyCode_CheckLineNumber")
-    _PyCode_CheckLineNumber :: proc(co : ^PyCodeObject, lasti : _c.int, bounds : ^PyAddrPair) -> _c.int ---;
-
-    @(link_name="_PyCode_ConstantKey")
-    _PyCode_ConstantKey :: proc(obj : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="PyCode_Optimize")
-    PyCode_Optimize :: proc(code : ^PyObject, consts : ^PyObject, names : ^PyObject, lnotab : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="_PyCode_GetExtra")
-    _PyCode_GetExtra :: proc(code : ^PyObject, index : _c.ssize_t, extra : ^rawptr) -> _c.int ---;
-
-    @(link_name="_PyCode_SetExtra")
-    _PyCode_SetExtra :: proc(code : ^PyObject, index : _c.ssize_t, extra : rawptr) -> _c.int ---;
 
     @(link_name="PyNode_Compile")
     PyNode_Compile :: proc(unamed0 : ^_node, unamed1 : cstring) -> ^PyCodeObject ---;
@@ -3825,7 +3892,7 @@ foreign python {
     PyCompile_OpcodeStackEffectWithJump :: proc(opcode : _c.int, oparg : _c.int, jump : _c.int) -> _c.int ---;
 
     @(link_name="_PyAST_Optimize")
-    _PyAST_Optimize :: proc(unamed0 : ^_mod, arena : ^PyArena, optimize : _c.int) -> _c.int ---;
+    _PyAST_Optimize :: proc(unamed0 : ^_mod, arena : ^PyArena, state : ^_PyASTOptimizeState) -> _c.int ---;
 
     @(link_name="PyRun_SimpleStringFlags")
     PyRun_SimpleStringFlags :: proc(unamed0 : cstring, unamed1 : ^PyCompilerFlags) -> _c.int ---;
@@ -3968,6 +4035,9 @@ foreign python {
     @(link_name="Py_Main")
     Py_Main :: proc(argc : _c.int, argv : ^^_c.wchar_t) -> _c.int ---;
 
+    @(link_name="Py_FrozenMain")
+    Py_FrozenMain :: proc(argc : _c.int, argv : ^cstring) -> _c.int ---;
+
     @(link_name="Py_BytesMain")
     Py_BytesMain :: proc(argc : _c.int, argv : ^cstring) -> _c.int ---;
 
@@ -4037,12 +4107,6 @@ foreign python {
     @(link_name="Py_InitializeFromConfig")
     Py_InitializeFromConfig :: proc(config : ^PyConfig) -> PyStatus ---;
 
-    @(link_name="_Py_InitializeFromArgs")
-    _Py_InitializeFromArgs :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^cstring) -> PyStatus ---;
-
-    @(link_name="_Py_InitializeFromWideArgs")
-    _Py_InitializeFromWideArgs :: proc(config : ^PyConfig, argc : _c.ssize_t, argv : ^^_c.wchar_t) -> PyStatus ---;
-
     @(link_name="_Py_InitializeMain")
     _Py_InitializeMain :: proc() -> PyStatus ---;
 
@@ -4088,6 +4152,9 @@ foreign python {
     @(link_name="_Py_SetLocaleFromEnv")
     _Py_SetLocaleFromEnv :: proc(category : _c.int) -> cstring ---;
 
+    @(link_name="_Py_NewInterpreter")
+    _Py_NewInterpreter :: proc(isolated_subinterpreter : _c.int) -> ^PyThreadState ---;
+
     @(link_name="PyEval_CallObjectWithKeywords")
     PyEval_CallObjectWithKeywords :: proc(callable : ^PyObject, args : ^PyObject, kwargs : ^PyObject) -> ^PyObject ---;
 
@@ -4096,30 +4163,6 @@ foreign python {
 
     @(link_name="PyEval_CallMethod")
     PyEval_CallMethod :: proc(obj : ^PyObject, name : cstring, format : cstring) -> ^PyObject ---;
-
-    @(link_name="PyEval_SetProfile")
-    PyEval_SetProfile :: proc(unamed0 : Py_tracefunc, unamed1 : ^PyObject) ---;
-
-    @(link_name="PyEval_SetTrace")
-    PyEval_SetTrace :: proc(unamed0 : Py_tracefunc, unamed1 : ^PyObject) ---;
-
-    @(link_name="_PyEval_SetCoroutineOriginTrackingDepth")
-    _PyEval_SetCoroutineOriginTrackingDepth :: proc(new_depth : _c.int) ---;
-
-    @(link_name="_PyEval_GetCoroutineOriginTrackingDepth")
-    _PyEval_GetCoroutineOriginTrackingDepth :: proc() -> _c.int ---;
-
-    @(link_name="_PyEval_SetAsyncGenFirstiter")
-    _PyEval_SetAsyncGenFirstiter :: proc(unamed0 : ^PyObject) ---;
-
-    @(link_name="_PyEval_GetAsyncGenFirstiter")
-    _PyEval_GetAsyncGenFirstiter :: proc() -> ^PyObject ---;
-
-    @(link_name="_PyEval_SetAsyncGenFinalizer")
-    _PyEval_SetAsyncGenFinalizer :: proc(unamed0 : ^PyObject) ---;
-
-    @(link_name="_PyEval_GetAsyncGenFinalizer")
-    _PyEval_GetAsyncGenFinalizer :: proc() -> ^PyObject ---;
 
     @(link_name="PyEval_GetBuiltins")
     PyEval_GetBuiltins :: proc() -> ^PyObject ---;
@@ -4131,13 +4174,7 @@ foreign python {
     PyEval_GetLocals :: proc() -> ^PyObject ---;
 
     @(link_name="PyEval_GetFrame")
-    PyEval_GetFrame :: proc() -> ^_frame ---;
-
-    @(link_name="_PyEval_GetBuiltinId")
-    _PyEval_GetBuiltinId :: proc(unamed0 : ^_Py_Identifier) -> ^PyObject ---;
-
-    @(link_name="PyEval_MergeCompilerFlags")
-    PyEval_MergeCompilerFlags :: proc(cf : ^PyCompilerFlags) -> _c.int ---;
+    PyEval_GetFrame :: proc() -> ^PyFrameObject ---;
 
     @(link_name="Py_AddPendingCall")
     Py_AddPendingCall :: proc(unamed0 : #type proc(unamed0 : rawptr) -> _c.int, arg : rawptr) -> _c.int ---;
@@ -4151,8 +4188,11 @@ foreign python {
     @(link_name="Py_GetRecursionLimit")
     Py_GetRecursionLimit :: proc() -> _c.int ---;
 
-    @(link_name="_Py_CheckRecursiveCall")
-    _Py_CheckRecursiveCall :: proc(where_ : cstring) -> _c.int ---;
+    @(link_name="Py_EnterRecursiveCall")
+    Py_EnterRecursiveCall :: proc(_where : cstring) -> _c.int ---;
+
+    @(link_name="Py_LeaveRecursiveCall")
+    Py_LeaveRecursiveCall :: proc() ---;
 
     @(link_name="PyEval_GetFuncName")
     PyEval_GetFuncName :: proc(unamed0 : ^PyObject) -> cstring ---;
@@ -4161,13 +4201,10 @@ foreign python {
     PyEval_GetFuncDesc :: proc(unamed0 : ^PyObject) -> cstring ---;
 
     @(link_name="PyEval_EvalFrame")
-    PyEval_EvalFrame :: proc(unamed0 : ^_frame) -> ^PyObject ---;
+    PyEval_EvalFrame :: proc(unamed0 : ^PyFrameObject) -> ^PyObject ---;
 
     @(link_name="PyEval_EvalFrameEx")
-    PyEval_EvalFrameEx :: proc(f : ^_frame, exc : _c.int) -> ^PyObject ---;
-
-    @(link_name="_PyEval_EvalFrameDefault")
-    _PyEval_EvalFrameDefault :: proc(f : ^_frame, exc : _c.int) -> ^PyObject ---;
+    PyEval_EvalFrameEx :: proc(f : ^PyFrameObject, exc : _c.int) -> ^PyObject ---;
 
     @(link_name="PyEval_SaveThread")
     PyEval_SaveThread :: proc() -> ^PyThreadState ---;
@@ -4192,6 +4229,42 @@ foreign python {
 
     @(link_name="PyEval_ReleaseThread")
     PyEval_ReleaseThread :: proc(tstate : ^PyThreadState) ---;
+
+    @(link_name="PyEval_SetProfile")
+    PyEval_SetProfile :: proc(unamed0 : Py_tracefunc, unamed1 : ^PyObject) ---;
+
+    @(link_name="_PyEval_SetProfile")
+    _PyEval_SetProfile :: proc(tstate : ^PyThreadState, func : Py_tracefunc, arg : ^PyObject) -> _c.int ---;
+
+    @(link_name="PyEval_SetTrace")
+    PyEval_SetTrace :: proc(unamed0 : Py_tracefunc, unamed1 : ^PyObject) ---;
+
+    @(link_name="_PyEval_SetTrace")
+    _PyEval_SetTrace :: proc(tstate : ^PyThreadState, func : Py_tracefunc, arg : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyEval_GetCoroutineOriginTrackingDepth")
+    _PyEval_GetCoroutineOriginTrackingDepth :: proc() -> _c.int ---;
+
+    @(link_name="_PyEval_SetAsyncGenFirstiter")
+    _PyEval_SetAsyncGenFirstiter :: proc(unamed0 : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyEval_GetAsyncGenFirstiter")
+    _PyEval_GetAsyncGenFirstiter :: proc() -> ^PyObject ---;
+
+    @(link_name="_PyEval_SetAsyncGenFinalizer")
+    _PyEval_SetAsyncGenFinalizer :: proc(unamed0 : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyEval_GetAsyncGenFinalizer")
+    _PyEval_GetAsyncGenFinalizer :: proc() -> ^PyObject ---;
+
+    @(link_name="_PyEval_GetBuiltinId")
+    _PyEval_GetBuiltinId :: proc(unamed0 : ^_Py_Identifier) -> ^PyObject ---;
+
+    @(link_name="PyEval_MergeCompilerFlags")
+    PyEval_MergeCompilerFlags :: proc(cf : ^PyCompilerFlags) -> _c.int ---;
+
+    @(link_name="_PyEval_EvalFrameDefault")
+    _PyEval_EvalFrameDefault :: proc(tstate : ^PyThreadState, f : ^PyFrameObject, exc : _c.int) -> ^PyObject ---;
 
     @(link_name="_PyEval_SetSwitchInterval")
     _PyEval_SetSwitchInterval :: proc(microseconds : _c.ulong) ---;
@@ -4263,7 +4336,7 @@ foreign python {
     _PySys_GetSizeOf :: proc(unamed0 : ^PyObject) -> _c.size_t ---;
 
     @(link_name="PySys_Audit")
-    PySys_Audit :: proc(unamed0 : cstring, unamed1 : cstring) -> _c.int ---;
+    PySys_Audit :: proc(event : cstring, argFormat : cstring) -> _c.int ---;
 
     @(link_name="PySys_AddAuditHook")
     PySys_AddAuditHook :: proc(unamed0 : Py_AuditHookFunction, unamed1 : rawptr) -> _c.int ---;
@@ -4295,9 +4368,6 @@ foreign python {
     @(link_name="_PySignal_AfterFork")
     _PySignal_AfterFork :: proc() ---;
 
-    @(link_name="PyInit__imp")
-    PyInit__imp :: proc() -> ^PyObject ---;
-
     @(link_name="PyImport_GetMagicNumber")
     PyImport_GetMagicNumber :: proc() -> _c.long ---;
 
@@ -4321,21 +4391,6 @@ foreign python {
 
     @(link_name="PyImport_GetModule")
     PyImport_GetModule :: proc(name : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="_PyImport_IsInitialized")
-    _PyImport_IsInitialized :: proc(unamed0 : ^PyInterpreterState) -> _c.int ---;
-
-    @(link_name="_PyImport_GetModuleId")
-    _PyImport_GetModuleId :: proc(name : ^_Py_Identifier) -> ^PyObject ---;
-
-    @(link_name="_PyImport_AddModuleObject")
-    _PyImport_AddModuleObject :: proc(name : ^PyObject, modules : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="_PyImport_SetModule")
-    _PyImport_SetModule :: proc(name : ^PyObject, module : ^PyObject) -> _c.int ---;
-
-    @(link_name="_PyImport_SetModuleString")
-    _PyImport_SetModuleString :: proc(name : cstring, module : ^PyObject) -> _c.int ---;
 
     @(link_name="PyImport_AddModuleObject")
     PyImport_AddModuleObject :: proc(name : ^PyObject) -> ^PyObject ---;
@@ -4364,14 +4419,29 @@ foreign python {
     @(link_name="PyImport_ReloadModule")
     PyImport_ReloadModule :: proc(m : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="PyImport_Cleanup")
-    PyImport_Cleanup :: proc() ---;
-
     @(link_name="PyImport_ImportFrozenModuleObject")
     PyImport_ImportFrozenModuleObject :: proc(name : ^PyObject) -> _c.int ---;
 
     @(link_name="PyImport_ImportFrozenModule")
     PyImport_ImportFrozenModule :: proc(name : cstring) -> _c.int ---;
+
+    @(link_name="PyImport_AppendInittab")
+    PyImport_AppendInittab :: proc(name : cstring, unamed0 : #type proc() -> ^PyObject) -> _c.int ---;
+
+    @(link_name="PyInit__imp")
+    PyInit__imp :: proc() -> ^PyObject ---;
+
+    @(link_name="_PyImport_IsInitialized")
+    _PyImport_IsInitialized :: proc(unamed0 : ^PyInterpreterState) -> _c.int ---;
+
+    @(link_name="_PyImport_GetModuleId")
+    _PyImport_GetModuleId :: proc(name : ^_Py_Identifier) -> ^PyObject ---;
+
+    @(link_name="_PyImport_SetModule")
+    _PyImport_SetModule :: proc(name : ^PyObject, module : ^PyObject) -> _c.int ---;
+
+    @(link_name="_PyImport_SetModuleString")
+    _PyImport_SetModuleString :: proc(name : cstring, module : ^PyObject) -> _c.int ---;
 
     @(link_name="_PyImport_AcquireLock")
     _PyImport_AcquireLock :: proc() ---;
@@ -4379,17 +4449,8 @@ foreign python {
     @(link_name="_PyImport_ReleaseLock")
     _PyImport_ReleaseLock :: proc() -> _c.int ---;
 
-    @(link_name="_PyImport_ReInitLock")
-    _PyImport_ReInitLock :: proc() ---;
-
-    @(link_name="_PyImport_FindBuiltin")
-    _PyImport_FindBuiltin :: proc(name : cstring, modules : ^PyObject) -> ^PyObject ---;
-
     @(link_name="_PyImport_FindExtensionObject")
     _PyImport_FindExtensionObject :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject) -> ^PyObject ---;
-
-    @(link_name="_PyImport_FindExtensionObjectEx")
-    _PyImport_FindExtensionObjectEx :: proc(unamed0 : ^PyObject, unamed1 : ^PyObject, unamed2 : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyImport_FixupBuiltin")
     _PyImport_FixupBuiltin :: proc(mod : ^PyObject, name : cstring, modules : ^PyObject) -> _c.int ---;
@@ -4400,8 +4461,8 @@ foreign python {
     @(link_name="PyImport_ExtendInittab")
     PyImport_ExtendInittab :: proc(newtab : ^_inittab) -> _c.int ---;
 
-    @(link_name="PyImport_AppendInittab")
-    PyImport_AppendInittab :: proc(name : cstring, unamed0 : #type proc() -> ^PyObject) -> _c.int ---;
+    @(link_name="PyObject_CallNoArgs")
+    PyObject_CallNoArgs :: proc(func : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyObject_Call")
     PyObject_Call :: proc(callable : ^PyObject, args : ^PyObject, kwargs : ^PyObject) -> ^PyObject ---;
@@ -4685,29 +4746,32 @@ foreign python {
     @(link_name="_PyStack_AsDict")
     _PyStack_AsDict :: proc(values : ^^PyObject, kwnames : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyStack_UnpackDict")
-    _PyStack_UnpackDict :: proc(args : ^^PyObject, nargs : _c.ssize_t, kwargs : ^PyObject, p_stack : ^^^PyObject, p_kwnames : ^^PyObject) -> _c.int ---;
-
     @(link_name="_Py_CheckFunctionResult")
-    _Py_CheckFunctionResult :: proc(callable : ^PyObject, result : ^PyObject, where_ : cstring) -> ^PyObject ---;
+    _Py_CheckFunctionResult :: proc(tstate : ^PyThreadState, callable : ^PyObject, result : ^PyObject, _where : cstring) -> ^PyObject ---;
 
     @(link_name="_PyObject_MakeTpCall")
-    _PyObject_MakeTpCall :: proc(callable : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, keywords : ^PyObject) -> ^PyObject ---;
+    _PyObject_MakeTpCall :: proc(tstate : ^PyThreadState, callable : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t, keywords : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyVectorcall_NARGS")
     PyVectorcall_NARGS :: proc(n : _c.size_t) -> _c.ssize_t ---;
 
-    @(link_name="_PyVectorcall_Function")
-    _PyVectorcall_Function :: proc(callable : ^PyObject) -> vectorcallfunc ---;
+    @(link_name="PyVectorcall_Function")
+    PyVectorcall_Function :: proc(callable : ^PyObject) -> vectorcallfunc ---;
 
-    @(link_name="_PyObject_Vectorcall")
-    _PyObject_Vectorcall :: proc(callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
+    @(link_name="_PyObject_VectorcallTstate")
+    _PyObject_VectorcallTstate :: proc(tstate : ^PyThreadState, callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyObject_FastCallDict")
-    _PyObject_FastCallDict :: proc(callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwargs : ^PyObject) -> ^PyObject ---;
+    @(link_name="PyObject_Vectorcall")
+    PyObject_Vectorcall :: proc(callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="PyObject_VectorcallDict")
+    PyObject_VectorcallDict :: proc(callable : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwargs : ^PyObject) -> ^PyObject ---;
 
     @(link_name="PyVectorcall_Call")
     PyVectorcall_Call :: proc(callable : ^PyObject, tuple : ^PyObject, dict : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="_PyObject_FastCallTstate")
+    _PyObject_FastCallTstate :: proc(tstate : ^PyThreadState, func : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t) -> ^PyObject ---;
 
     @(link_name="_PyObject_FastCall")
     _PyObject_FastCall :: proc(func : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t) -> ^PyObject ---;
@@ -4715,11 +4779,17 @@ foreign python {
     @(link_name="_PyObject_CallNoArg")
     _PyObject_CallNoArg :: proc(func : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyObject_Call_Prepend")
-    _PyObject_Call_Prepend :: proc(callable : ^PyObject, obj : ^PyObject, args : ^PyObject, kwargs : ^PyObject) -> ^PyObject ---;
+    @(link_name="PyObject_CallOneArg")
+    PyObject_CallOneArg :: proc(func : ^PyObject, arg : ^PyObject) -> ^PyObject ---;
 
-    @(link_name="_PyObject_FastCall_Prepend")
-    _PyObject_FastCall_Prepend :: proc(callable : ^PyObject, obj : ^PyObject, args : ^^PyObject, nargs : _c.ssize_t) -> ^PyObject ---;
+    @(link_name="PyObject_VectorcallMethod")
+    PyObject_VectorcallMethod :: proc(name : ^PyObject, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="PyObject_CallMethodNoArgs")
+    PyObject_CallMethodNoArgs :: proc(self : ^PyObject, name : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="PyObject_CallMethodOneArg")
+    PyObject_CallMethodOneArg :: proc(self : ^PyObject, name : ^PyObject, arg : ^PyObject) -> ^PyObject ---;
 
     @(link_name="_PyObject_CallMethodId")
     _PyObject_CallMethodId :: proc(obj : ^PyObject, name : ^_Py_Identifier, format : cstring) -> ^PyObject ---;
@@ -4730,11 +4800,23 @@ foreign python {
     @(link_name="_PyObject_CallMethodIdObjArgs")
     _PyObject_CallMethodIdObjArgs :: proc(obj : ^PyObject, name : ^_Py_Identifier) -> ^PyObject ---;
 
+    @(link_name="_PyObject_VectorcallMethodId")
+    _PyObject_VectorcallMethodId :: proc(name : ^_Py_Identifier, args : ^^PyObject, nargsf : _c.size_t, kwnames : ^PyObject) -> ^PyObject ---;
+
+    @(link_name="_PyObject_CallMethodIdNoArgs")
+    _PyObject_CallMethodIdNoArgs :: proc(self : ^PyObject, name : ^_Py_Identifier) -> ^PyObject ---;
+
+    @(link_name="_PyObject_CallMethodIdOneArg")
+    _PyObject_CallMethodIdOneArg :: proc(self : ^PyObject, name : ^_Py_Identifier, arg : ^PyObject) -> ^PyObject ---;
+
     @(link_name="_PyObject_HasLen")
     _PyObject_HasLen :: proc(o : ^PyObject) -> _c.int ---;
 
     @(link_name="PyObject_LengthHint")
     PyObject_LengthHint :: proc(o : ^PyObject, unamed0 : _c.ssize_t) -> _c.ssize_t ---;
+
+    @(link_name="PyObject_CheckBuffer")
+    PyObject_CheckBuffer :: proc(obj : ^PyObject) -> _c.int ---;
 
     @(link_name="PyObject_GetBuffer")
     PyObject_GetBuffer :: proc(obj : ^PyObject, view : ^Py_buffer, flags : _c.int) -> _c.int ---;
@@ -4743,7 +4825,7 @@ foreign python {
     PyBuffer_GetPointer :: proc(view : ^Py_buffer, indices : ^_c.ssize_t) -> rawptr ---;
 
     @(link_name="PyBuffer_SizeFromFormat")
-    PyBuffer_SizeFromFormat :: proc(unamed0 : cstring) -> _c.int ---;
+    PyBuffer_SizeFromFormat :: proc(format : cstring) -> _c.ssize_t ---;
 
     @(link_name="PyBuffer_ToContiguous")
     PyBuffer_ToContiguous :: proc(buf : rawptr, view : ^Py_buffer, len : _c.ssize_t, order : _c.char) -> _c.int ---;
@@ -4820,21 +4902,6 @@ foreign python {
     @(link_name="PyOS_mystricmp")
     PyOS_mystricmp :: proc(unamed0 : cstring, unamed1 : cstring) -> _c.int ---;
 
-    @(link_name="_Py_dg_strtod")
-    _Py_dg_strtod :: proc(str : cstring, ptr : ^cstring) -> _c.double ---;
-
-    @(link_name="_Py_dg_dtoa")
-    _Py_dg_dtoa :: proc(d : _c.double, mode : _c.int, ndigits : _c.int, decpt : ^_c.int, sign : ^_c.int, rve : ^cstring) -> cstring ---;
-
-    @(link_name="_Py_dg_freedtoa")
-    _Py_dg_freedtoa :: proc(s : cstring) ---;
-
-    @(link_name="_Py_dg_stdnan")
-    _Py_dg_stdnan :: proc(sign : _c.int) -> _c.double ---;
-
-    @(link_name="_Py_dg_infinity")
-    _Py_dg_infinity :: proc(sign : _c.int) -> _c.double ---;
-
     @(link_name="Py_DecodeLocale")
     Py_DecodeLocale :: proc(arg : cstring, size : ^_c.size_t) -> ^_c.wchar_t ---;
 
@@ -4895,6 +4962,12 @@ foreign python {
     @(link_name="_Py_wrealpath")
     _Py_wrealpath :: proc(path : ^_c.wchar_t, resolved_path : ^_c.wchar_t, resolved_path_len : _c.size_t) -> ^_c.wchar_t ---;
 
+    @(link_name="_Py_isabs")
+    _Py_isabs :: proc(path : ^_c.wchar_t) -> _c.int ---;
+
+    @(link_name="_Py_abspath")
+    _Py_abspath :: proc(path : ^_c.wchar_t, abspath_p : ^^_c.wchar_t) -> _c.int ---;
+
     @(link_name="_Py_wgetcwd")
     _Py_wgetcwd :: proc(buf : ^_c.wchar_t, buflen : _c.size_t) -> ^_c.wchar_t ---;
 
@@ -4924,5 +4997,86 @@ foreign python {
 
     @(link_name="_PyTraceMalloc_GetTraceback")
     _PyTraceMalloc_GetTraceback :: proc(domain : _c.uint, ptr : _c.uintptr_t) -> ^PyObject ---;
+
+    @(link_name="_PyWideStringList_Clear")
+    _PyWideStringList_Clear :: proc(list : ^PyWideStringList) ---;
+
+    @(link_name="_PyWideStringList_Copy")
+    _PyWideStringList_Copy :: proc(list : ^PyWideStringList, list2 : ^PyWideStringList) -> _c.int ---;
+
+    @(link_name="_PyWideStringList_Extend")
+    _PyWideStringList_Extend :: proc(list : ^PyWideStringList, list2 : ^PyWideStringList) -> PyStatus ---;
+
+    @(link_name="_PyWideStringList_AsList")
+    _PyWideStringList_AsList :: proc(list : ^PyWideStringList) -> ^PyObject ---;
+
+    @(link_name="_PyArgv_AsWstrList")
+    _PyArgv_AsWstrList :: proc(args : ^_PyArgv, list : ^PyWideStringList) -> PyStatus ---;
+
+    @(link_name="_Py_str_to_int")
+    _Py_str_to_int :: proc(str : cstring, result : ^_c.int) -> _c.int ---;
+
+    @(link_name="_Py_get_xoption")
+    _Py_get_xoption :: proc(xoptions : ^PyWideStringList, name : ^_c.wchar_t) -> ^_c.wchar_t ---;
+
+    @(link_name="_Py_GetEnv")
+    _Py_GetEnv :: proc(use_environment : _c.int, name : cstring) -> cstring ---;
+
+    @(link_name="_Py_get_env_flag")
+    _Py_get_env_flag :: proc(use_environment : _c.int, flag : ^_c.int, name : cstring) ---;
+
+    @(link_name="_Py_ClearArgcArgv")
+    _Py_ClearArgcArgv :: proc() ---;
+
+    @(link_name="_PyPreCmdline_Clear")
+    _PyPreCmdline_Clear :: proc(cmdline : ^_PyPreCmdline) ---;
+
+    @(link_name="_PyPreCmdline_SetArgv")
+    _PyPreCmdline_SetArgv :: proc(cmdline : ^_PyPreCmdline, args : ^_PyArgv) -> PyStatus ---;
+
+    @(link_name="_PyPreCmdline_SetConfig")
+    _PyPreCmdline_SetConfig :: proc(cmdline : ^_PyPreCmdline, config : ^PyConfig) -> PyStatus ---;
+
+    @(link_name="_PyPreCmdline_Read")
+    _PyPreCmdline_Read :: proc(cmdline : ^_PyPreCmdline, preconfig : ^PyPreConfig) -> PyStatus ---;
+
+    @(link_name="_PyPreConfig_InitCompatConfig")
+    _PyPreConfig_InitCompatConfig :: proc(preconfig : ^PyPreConfig) ---;
+
+    @(link_name="_PyPreConfig_InitFromConfig")
+    _PyPreConfig_InitFromConfig :: proc(preconfig : ^PyPreConfig, config : ^PyConfig) ---;
+
+    @(link_name="_PyPreConfig_InitFromPreConfig")
+    _PyPreConfig_InitFromPreConfig :: proc(preconfig : ^PyPreConfig, config2 : ^PyPreConfig) -> PyStatus ---;
+
+    @(link_name="_PyPreConfig_AsDict")
+    _PyPreConfig_AsDict :: proc(preconfig : ^PyPreConfig) -> ^PyObject ---;
+
+    @(link_name="_PyPreConfig_GetConfig")
+    _PyPreConfig_GetConfig :: proc(preconfig : ^PyPreConfig, config : ^PyConfig) ---;
+
+    @(link_name="_PyPreConfig_Read")
+    _PyPreConfig_Read :: proc(preconfig : ^PyPreConfig, args : ^_PyArgv) -> PyStatus ---;
+
+    @(link_name="_PyPreConfig_Write")
+    _PyPreConfig_Write :: proc(preconfig : ^PyPreConfig) -> PyStatus ---;
+
+    @(link_name="_PyConfig_InitCompatConfig")
+    _PyConfig_InitCompatConfig :: proc(config : ^PyConfig) ---;
+
+    @(link_name="_PyConfig_Copy")
+    _PyConfig_Copy :: proc(config : ^PyConfig, config2 : ^PyConfig) -> PyStatus ---;
+
+    @(link_name="_PyConfig_InitPathConfig")
+    _PyConfig_InitPathConfig :: proc(config : ^PyConfig) -> PyStatus ---;
+
+    @(link_name="_PyConfig_Write")
+    _PyConfig_Write :: proc(config : ^PyConfig, runtime : ^pyruntimestate) -> PyStatus ---;
+
+    @(link_name="_PyConfig_SetPyArgv")
+    _PyConfig_SetPyArgv :: proc(config : ^PyConfig, args : ^_PyArgv) -> PyStatus ---;
+
+    @(link_name="_Py_GetConfigsAsDict")
+    _Py_GetConfigsAsDict :: proc() -> ^PyObject ---;
 
 }
