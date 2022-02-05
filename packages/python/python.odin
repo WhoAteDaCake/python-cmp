@@ -739,7 +739,7 @@ PyCellObject :: struct {
 _is :: struct {};
 
 PyStatus :: struct {
-    type : AnonymousEnum5,
+    _type : AnonymousEnum5,
     func : cstring,
     err_msg : cstring,
     exitcode : _c.int,

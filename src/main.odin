@@ -55,6 +55,10 @@ import "packages:python"
 pymain_init :: proc(args: ^python._PyArgv) -> python.PyStatus {
     status := python.PyStatus{}
     status = python._PyRuntime_Initialize();
+
+    if python._PyStatus_EXCEPTION(status) {
+        
+    }
     
     return status
 }
