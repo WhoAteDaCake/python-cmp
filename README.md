@@ -1,8 +1,9 @@
 # Short term goals
 
-* Open bindings to CPython
-* Parse Python using the bindings
-* Start to create a basic interpreter
+* ~~Open bindings to CPython~~
+* ~~Parse Python using the bindings~~
+* Translate C code piece by piece till functions, which parse code.
+    * 
 
 # Long term goals 
 
